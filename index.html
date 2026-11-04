@@ -1,0 +1,1864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>CarbonSetu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sustainability Index Scores, EBITDA-at-Risk, live BRSR extraction, policy simulator and investor case for Indian CBAM exporters.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a "customs ledger" — a sticky top bar, a 12-column grid inside a 1240px frame,
+   cards only for things you operate (filters, calculator, charts); reading content stays flat. */
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#E8EFED; --ink:#10201E; --ink-2:#435654; --muted:#5F716E; --line:#D3DDDA;
+  --accent:#0B6E79; --accent-ink:#FFFFFF; --accent-soft:#D8ECEE;
+  --ochre:#9A5A0C; --ochre-soft:#F5E6D0;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --good-ink:#0A6A0A; --warn-ink:#7A5200; --serious-ink:#A4461F; --crit-ink:#B02727;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --grid:#E3EAE8;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-data:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-7:48px; --sp-8:72px;
+  --r-1:6px; --r-2:10px;
+  --t-xs:.75rem; --t-sm:.875rem; --t-md:1rem; --t-lg:1.25rem; --t-xl:1.75rem; --t-2xl:2.5rem; --t-3xl:clamp(2.1rem,4.6vw,3.6rem);
+  --frame:1240px;
+  --shadow:0 1px 2px rgba(16,32,30,.06),0 4px 16px rgba(16,32,30,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0C1514; --surface:#13201F; --surface-2:#1A2A28; --ink:#E5EEEC; --ink-2:#B3C3C0; --muted:#93A6A3; --line:#2A3B39;
+  --accent:#5BC0CC; --accent-ink:#06201F; --accent-soft:#163A3D; --ochre:#E3A456; --ochre-soft:#3A2A14;
+  --good-ink:#5AD35A; --warn-ink:#F5C35A; --serious-ink:#F2A07F; --crit-ink:#FF8E8E;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --grid:#22322F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0C1514; --surface:#13201F; --surface-2:#1A2A28; --ink:#E5EEEC; --ink-2:#B3C3C0; --muted:#93A6A3; --line:#2A3B39;
+  --accent:#5BC0CC; --accent-ink:#06201F; --accent-soft:#163A3D; --ochre:#E3A456; --ochre-soft:#3A2A14;
+  --good-ink:#5AD35A; --warn-ink:#F5C35A; --serious-ink:#F2A07F; --crit-ink:#FF8E8E;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --grid:#22322F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35); color-scheme:dark }
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation:none!important;transition:none!important} }
+body{background:var(--bg);color:var(--ink);font:400 var(--t-md)/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:var(--t-3xl);font-weight:700}
+h2{font-size:var(--t-2xl);font-weight:700}
+h3{font-size:var(--t-lg);font-weight:700}
+h4{font-family:var(--f-body);font-size:var(--t-sm);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+p{margin:0;max-width:68ch}
+a{color:var(--accent);text-underline-offset:2px}
+.num,.mono,td.n,th.n{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,main:focus{outline:none}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:var(--accent-ink);padding:8px 12px;border-radius:6px;z-index:50}
+.skip:focus{left:max(16px, env(safe-area-inset-left,0px))}
+
+/* frame + gutter */
+.wrap{max-width:var(--frame);margin-inline:auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+
+/* header */
+.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.site-head .wrap{display:flex;align-items:center;gap:var(--sp-5);min-height:60px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-family:var(--f-display);font-weight:700;font-size:1.2rem}
+.brand svg{flex:none}
+.brand small{font:500 var(--t-xs)/1 var(--f-data);color:var(--muted);letter-spacing:.04em}
+@media (max-width:599px){ .brand small{display:none} }
+.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nav a{color:var(--ink-2);text-decoration:none;font-size:var(--t-sm);font-weight:500;padding:8px 10px;border-radius:var(--r-1)}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.icon-btn{display:inline-grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:var(--r-1);background:var(--surface);color:var(--ink);cursor:pointer}
+.menu-btn{display:none}
+.theme-btn{flex:none}
+@media (max-width:1180px){
+  .menu-btn{display:inline-grid;margin-left:auto}
+  .nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--line);
+       padding:8px max(16px, env(safe-area-inset-right,0px)) 16px max(16px, env(safe-area-inset-left,0px));box-shadow:var(--shadow)}
+  .nav.open{display:flex}
+  .nav a{padding:12px}
+}
+
+main{display:block;overflow-x:clip}
+.view{padding-block:var(--sp-6) var(--sp-8)}
+.view[hidden]{display:none}
+.eyebrow{font:500 var(--t-xs)/1.2 var(--f-data);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:1.125rem;color:var(--ink-2);max-width:62ch}
+.stack{display:flex;flex-direction:column;gap:var(--sp-4)}
+.section{margin-top:var(--sp-8)}
+.section-head{display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-5)}
+.grid-12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--sp-5)}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+@media (max-width:1023px){ .span-8,.span-7,.span-6,.span-5{grid-column:span 12} .span-4,.span-3{grid-column:span 6} }
+@media (max-width:599px){ .span-4,.span-3{grid-column:span 12} .grid-12{gap:var(--sp-4)} }
+.grid-12>*{min-width:0}
+
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 var(--t-sm)/1 var(--f-body);padding:12px 18px;border-radius:var(--r-1);border:1px solid transparent;cursor:pointer;text-decoration:none;transition:transform .15s ease, background .15s ease}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{background:var(--surface-2)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);padding:var(--sp-5)}
+.card h3{margin-bottom:var(--sp-2)}
+.note{font-size:var(--t-sm);color:var(--muted)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--sp-7);align-items:end;padding-top:var(--sp-5)}
+.hero h1 em{font-style:normal;color:var(--ochre)}
+.hero .actions{display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-5)}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);box-shadow:var(--shadow);overflow:hidden}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px dashed var(--line);font:500 var(--t-xs)/1.3 var(--f-data);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.ticket-body{padding:18px;display:grid;gap:14px}
+.ticket-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:var(--t-sm)}
+.ticket-row b{font:500 1.05rem/1.2 var(--f-data);font-variant-numeric:tabular-nums}
+.ticket-row.big b{font:700 1.9rem/1 var(--f-display);color:var(--ochre)}
+.ticket-foot{padding:12px 18px;background:var(--surface-2);font-size:var(--t-xs);color:var(--muted)}
+@media (max-width:1023px){ .hero{grid-template-columns:1fr;gap:var(--sp-6)} }
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{padding:var(--sp-5) var(--sp-4) var(--sp-5) 0;display:flex;flex-direction:column;gap:6px}
+.stat+.stat{padding-left:var(--sp-5);border-left:1px solid var(--line)}
+.stat .v{font:700 2rem/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat .l{font-size:var(--t-sm);color:var(--ink-2)}
+.stat .s{font:400 var(--t-xs)/1.4 var(--f-data);color:var(--muted)}
+@media (max-width:1023px){ .stats{grid-template-columns:repeat(2,minmax(0,1fr))} .stat:nth-child(3){padding-left:0;border-left:0} .stat:nth-child(n+3){border-top:1px solid var(--line)} }
+@media (max-width:599px){ .stats{grid-template-columns:1fr} .stat,.stat+.stat{padding-left:0;border-left:0} .stat+.stat{border-top:1px solid var(--line)} }
+
+/* phase-out ruler */
+.ruler{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;align-items:end;height:200px;padding-top:10px}
+.ruler .col{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;height:100%;gap:6px}
+.ruler .bar{background:var(--accent);border-radius:4px 4px 0 0;position:relative;min-height:2px}
+.ruler .bar.exp{background:var(--ochre)}
+.ruler .yr{font:500 var(--t-xs)/1 var(--f-data);text-align:center;color:var(--muted)}
+.ruler .pct{font:500 var(--t-xs)/1 var(--f-data);text-align:center}
+.ruler .col.cliff .yr{color:var(--ochre);font-weight:700}
+.ruler .col{min-width:0}
+@media (max-width:599px){ .ruler{gap:3px} .ruler .pct,.ruler .yr{font-size:9.5px;letter-spacing:-.02em} }
+.legend{display:flex;gap:var(--sp-4);flex-wrap:wrap;font-size:var(--t-sm);color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* steps + audiences */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5);counter-reset:s}
+.steps li{list-style:none;border-top:2px solid var(--ink);padding-top:var(--sp-3);display:flex;flex-direction:column;gap:6px}
+.steps li::before{counter-increment:s;content:"Step " counter(s);font:500 var(--t-xs)/1 var(--f-data);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.steps{padding:0;margin:0}
+@media (max-width:767px){ .steps{grid-template-columns:1fr} }
+.aud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4)}
+.aud .card{display:flex;flex-direction:column;gap:8px}
+.aud .card .q{font-family:var(--f-data);font-size:var(--t-xs);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+@media (max-width:1023px){ .aud{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:599px){ .aud{grid-template-columns:1fr} }
+
+/* controls */
+.toolbar{display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-5);align-items:flex-end;padding:var(--sp-4) var(--sp-5);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);position:sticky;top:calc(env(safe-area-inset-top,0px) + 61px);z-index:5}
+@media (max-width:1023px){ .toolbar{position:static} }
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.field>.lbl{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+select,input[type="number"],input[type="text"],input[type="search"]{font:400 var(--t-sm)/1.2 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-1);padding:10px 12px;min-height:40px;width:100%}
+input[type="number"]{font-family:var(--f-data)}
+select:hover,input:hover{border-color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-1);overflow:hidden;background:var(--surface)}
+.seg button{font:500 var(--t-sm)/1 var(--f-body);padding:10px 12px;border:0;background:transparent;color:var(--ink-2);cursor:pointer;min-height:40px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip-btn{font:500 var(--t-sm)/1 var(--f-body);padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;display:inline-flex;gap:6px;align-items:center;min-height:36px}
+.chip-btn[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:var(--surface-2)}
+.chip-btn i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:var(--t-sm);cursor:pointer;min-height:40px}
+.switch input{width:18px;height:18px;accent-color:var(--accent)}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4);margin-top:var(--sp-5)}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);padding:var(--sp-4) var(--sp-5);display:flex;flex-direction:column;gap:6px}
+.kpi .k{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+.kpi .v{font:700 1.75rem/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi .d{font:400 var(--t-xs)/1.4 var(--f-data);color:var(--muted)}
+@media (max-width:1023px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:599px){ .kpis{grid-template-columns:1fr} }
+
+/* chart cards */
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-3);min-width:0}
+.chart-card header{display:flex;justify-content:space-between;gap:var(--sp-3);align-items:flex-start;flex-wrap:wrap}
+.chart-card header p{font-size:var(--t-sm);color:var(--ink-2)}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font:400 11px var(--f-data)}
+.chart .lbl-strong{fill:var(--ink);font:500 12px var(--f-body)}
+.chart .gridline{stroke:var(--grid);stroke-width:1}
+.chart .axis{stroke:var(--line);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--surface);border-radius:var(--r-1);padding:8px 10px;font:400 12px/1.45 var(--f-body);min-width:150px;box-shadow:var(--shadow);opacity:0;transform:translateY(4px);transition:opacity .12s, transform .12s;z-index:4}
+.tip.on{opacity:1;transform:none}
+.tip b{font-family:var(--f-data);font-weight:500}
+.tip .row{display:flex;justify-content:space-between;gap:12px}
+.tip .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+details.tbl summary{cursor:pointer;font-size:var(--t-sm);color:var(--accent);font-weight:500;width:max-content}
+details.tbl[open] summary{margin-bottom:8px}
+
+/* tables */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-2);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:var(--t-sm)}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+td.wrap,th.wrap{white-space:normal;min-width:220px}
+thead th{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;background:var(--surface-2);position:sticky;top:0}
+th.n,td.n{text-align:right}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--surface-2)}
+th button.sort{all:unset;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+th button.sort:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+th[aria-sort="ascending"] button.sort::after{content:"▲";font-size:9px}
+th[aria-sort="descending"] button.sort::after{content:"▼";font-size:9px}
+.firm-link{font-weight:600;color:var(--ink);text-decoration:none}
+.firm-link:hover{color:var(--accent);text-decoration:underline}
+.sector-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:0}
+
+/* status + tier pills */
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 var(--t-xs)/1 var(--f-body);padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%}
+.pill.low{color:var(--good-ink)} .pill.low .dot{background:var(--good)}
+.pill.mod{color:var(--warn-ink)} .pill.mod .dot{background:var(--warn)}
+.pill.high{color:var(--serious-ink)} .pill.high .dot{background:var(--serious)}
+.pill.sev{color:var(--crit-ink)} .pill.sev .dot{background:var(--crit)}
+.pill.none{color:var(--muted)} .pill.none .dot{background:var(--line)}
+.tier{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;font:600 var(--t-xs)/1 var(--f-data);border:1.5px solid var(--ink);color:var(--ink)}
+.tier.B{border-style:dashed}
+.tier.C{border-style:dotted;color:var(--muted);border-color:var(--muted)}
+.scorebar{display:flex;align-items:center;gap:8px}
+.scorebar .trk{flex:1;min-width:60px;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.scorebar .fill{height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--sp-5);align-items:start}
+.calc>*,.learn-grid>*,.prose>*,.stack>*{min-width:0}
+@media (max-width:1023px){ .calc{grid-template-columns:1fr} }
+.form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-5)}
+fieldset{border:0;padding:0;margin:0;min-width:0;min-inline-size:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4)}
+fieldset legend{grid-column:1/-1;font:700 1rem/1.2 var(--f-display);margin-bottom:var(--sp-3);padding:0}
+fieldset .full{grid-column:1/-1}
+@media (max-width:599px){ fieldset{grid-template-columns:1fr} }
+.hint{font-size:var(--t-xs);color:var(--muted);line-height:1.4}
+.checks{display:grid;gap:8px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:var(--t-sm);cursor:pointer}
+.checks input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex:none}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+.result-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
+@media (max-width:599px){ .result-head{grid-template-columns:1fr} }
+.sample-flag{display:inline-flex;gap:6px;align-items:center;font:500 var(--t-xs)/1 var(--f-data);color:var(--ochre);background:var(--ochre-soft);padding:6px 9px;border-radius:999px;width:max-content}
+.callout{border-left:3px solid var(--ochre);background:var(--ochre-soft);padding:var(--sp-4);border-radius:0 var(--r-1) var(--r-1) 0;font-size:var(--t-sm);color:var(--ink)}
+.callout.teal{border-left-color:var(--accent);background:var(--accent-soft)}
+
+/* firm page */
+.firm-head{display:flex;justify-content:space-between;gap:var(--sp-5);flex-wrap:wrap;align-items:flex-end}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:1px solid var(--line)}
+.facts div{padding:12px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:var(--t-sm)}
+.facts div:nth-child(odd){padding-right:var(--sp-4)} .facts div:nth-child(even){padding-left:var(--sp-4);border-left:1px solid var(--line)}
+.facts dt{color:var(--ink-2)} .facts dd{margin:0;font-family:var(--f-data);text-align:right}
+@media (max-width:599px){ .facts{grid-template-columns:1fr} .facts div:nth-child(even){padding-left:0;border-left:0} .facts div:nth-child(odd){padding-right:0} }
+.pillars{display:grid;gap:12px}
+.pillar{display:grid;grid-template-columns:150px minmax(0,1fr) 40px;gap:12px;align-items:center;font-size:var(--t-sm)}
+.pillar .w{font-family:var(--f-data);color:var(--muted);font-size:var(--t-xs)}
+@media (max-width:599px){ .pillar{grid-template-columns:110px minmax(0,1fr) 36px} }
+.back{display:inline-flex;gap:6px;align-items:center;font-size:var(--t-sm);text-decoration:none;margin-bottom:var(--sp-4)}
+
+/* learn */
+.learn-grid{display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--sp-7);align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);display:flex;flex-direction:column;gap:2px;font-size:var(--t-sm)}
+.toc a{color:var(--ink-2);text-decoration:none;padding:8px 12px;border-left:2px solid var(--line)}
+.toc a:hover{color:var(--ink);border-left-color:var(--ink)}
+@media (max-width:1023px){ .learn-grid{grid-template-columns:1fr;gap:var(--sp-5)} .toc{position:static;flex-direction:row;flex-wrap:wrap;gap:6px} .toc a{border:1px solid var(--line);border-radius:999px;padding:6px 12px} }
+.prose{display:flex;flex-direction:column;gap:var(--sp-4);max-width:72ch}
+.prose h2{font-size:var(--t-xl);margin-top:var(--sp-6)}
+.prose h2:first-child{margin-top:0}
+.acc details{border-bottom:1px solid var(--line)}
+.acc details:first-child{border-top:1px solid var(--line)}
+.acc summary{cursor:pointer;padding:16px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"+";font:500 1.2rem/1 var(--f-data);color:var(--muted);transition:transform .2s}
+.acc details[open] summary::after{transform:rotate(45deg)}
+.acc .body{padding:0 0 16px;display:flex;flex-direction:column;gap:10px;color:var(--ink-2)}
+.formula{font:500 var(--t-sm)/1.6 var(--f-data);background:var(--surface-2);border-radius:var(--r-1);padding:var(--sp-4);overflow-x:auto;white-space:nowrap}
+dl.gloss{display:grid;grid-template-columns:200px minmax(0,1fr);gap:0;margin:0}
+dl.gloss dt,dl.gloss dd{padding:12px 0;border-bottom:1px solid var(--line);margin:0}
+dl.gloss dt{font-weight:600;padding-right:16px}
+dl.gloss dd{color:var(--ink-2)}
+@media (max-width:599px){ dl.gloss{grid-template-columns:1fr} dl.gloss dt{border-bottom:0;padding-bottom:0} }
+.quiz .q{border:1px solid var(--line);border-radius:var(--r-2);padding:var(--sp-4);background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.quiz .opts{display:grid;gap:6px}
+.quiz button.opt{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-1);padding:10px 12px;font-size:var(--t-sm);display:flex;gap:10px;align-items:center}
+.quiz button.opt:hover{background:var(--surface-2)}
+.quiz button.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.quiz button.opt.right{border-color:var(--good);background:color-mix(in srgb, var(--good) 12%, var(--surface))}
+.quiz button.opt.wrong{border-color:var(--crit);background:color-mix(in srgb, var(--crit) 10%, var(--surface))}
+.quiz .fb{font-size:var(--t-sm);color:var(--ink-2)}
+
+/* pricing */
+.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4)}
+.plan{display:flex;flex-direction:column;gap:10px}
+.plan .price{font:700 1.6rem/1 var(--f-display)}
+.plan ul{margin:0;padding-left:18px;font-size:var(--t-sm);color:var(--ink-2);display:grid;gap:4px}
+@media (max-width:1023px){ .plans{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:599px){ .plans{grid-template-columns:1fr} }
+
+footer.site-foot{border-top:1px solid var(--line);background:var(--surface)}
+footer.site-foot .wrap{padding-block:var(--sp-6);display:grid;grid-template-columns:2fr 1fr 1fr;gap:var(--sp-5);font-size:var(--t-sm);color:var(--ink-2)}
+footer.site-foot nav{display:flex;flex-direction:column;gap:6px}
+footer.site-foot a{color:var(--ink-2)}
+@media (max-width:767px){ footer.site-foot .wrap{grid-template-columns:1fr} }
+@media (min-width:1441px){ :root{--frame:1360px} }
+
+.reveal{animation:rise .5s ease both}
+.reveal:nth-child(2){animation-delay:.06s}.reveal:nth-child(3){animation-delay:.12s}.reveal:nth-child(4){animation-delay:.18s}
+@keyframes rise{from{transform:translateY(8px)}to{transform:none}}
+.deliv{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4)}
+.deliv-card{display:flex;flex-direction:column;gap:8px;height:100%;text-decoration:none;color:var(--ink);transition:border-color .15s, transform .15s}
+.deliv-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.deliv-card .q{font:500 var(--t-xs)/1 var(--f-data);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.deliv-card .go{margin-top:auto;font-weight:600;font-size:var(--t-sm);color:var(--accent)}
+@media (max-width:1023px){ .deliv{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:599px){ .deliv{grid-template-columns:1fr} }
+.pitch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:2px solid var(--ink)}
+.pitch>div{padding:var(--sp-4) var(--sp-4) var(--sp-4) 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}
+.pitch>div:not(:nth-child(3n+1)){padding-left:var(--sp-4);border-left:1px solid var(--line)}
+.pitch p{font-size:var(--t-sm);color:var(--ink-2)}
+@media (max-width:767px){ .pitch{grid-template-columns:1fr} .pitch>div,.pitch>div:not(:nth-child(3n+1)){padding-left:0;border-left:0} }
+textarea{font:400 var(--t-sm)/1.5 var(--f-data);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-1);padding:10px 12px;width:100%;resize:vertical;min-height:180px}
+input[type="file"]{font:400 var(--t-sm)/1.2 var(--f-body);color:var(--ink-2);max-width:100%}
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.checklist li{display:flex;gap:12px;align-items:flex-start;font-size:var(--t-sm)}
+.pipe{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--sp-4);counter-reset:p}
+.pipe li{border-top:2px solid var(--accent);padding-top:var(--sp-3);display:flex;flex-direction:column;gap:6px;font-size:var(--t-sm);color:var(--ink-2)}
+.pipe li b{color:var(--ink);font-family:var(--f-display)}
+.pipe li::before{counter-increment:p;content:counter(p);font:500 var(--t-xs)/1 var(--f-data);color:var(--muted)}
+@media (max-width:1023px){ .pipe{grid-template-columns:1fr 1fr} }
+@media (max-width:599px){ .pipe{grid-template-columns:1fr} }
+.chart-card header .pill{flex:none}
+
+
+/* ===== v4: design upgrades adopted from the design review ===== */
+.view:not([hidden]){animation:viewin .35s ease both}
+@keyframes viewin{from{opacity:0;transform:translateY(6px)}}
+.toolbar.simbar{display:grid;gap:var(--sp-3)}
+.simbar .row1{display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-5);align-items:flex-end}
+.refchips{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;border-top:1px dashed var(--line);padding-top:var(--sp-3)}
+.refchips .lbl{font:500 var(--t-xs)/1 var(--f-data);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.refchip{font:400 var(--t-xs)/1 var(--f-data);padding:6px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.refchip b{color:var(--ink);font-weight:600}
+.lens{display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center;margin-top:var(--sp-5)}
+.lens .lbl{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+.lens .seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+.lens .seg button{flex:none;white-space:nowrap}
+.lens-note{margin-top:var(--sp-4);max-width:none}
+.lens-note a{font-weight:600}
+.pbar{display:flex;align-items:center;gap:8px;min-width:150px}
+.pbar .trk{flex:1;display:flex;height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;min-width:96px}
+.pbar .trk span{display:block;height:100%}
+.pbar .trk span+span{box-shadow:inset 1px 0 0 var(--surface)}
+.pc1{background:var(--accent)}
+.pc2{background:color-mix(in srgb,var(--accent) 68%,var(--surface))}
+.pc3{background:color-mix(in srgb,var(--accent) 44%,var(--surface))}
+.pc4{background:color-mix(in srgb,var(--accent) 26%,var(--surface))}
+.legend i.pc1,.legend i.pc2,.legend i.pc3,.legend i.pc4{border-radius:3px}
+.delta{font:500 var(--t-xs)/1 var(--f-data);padding:3px 6px;border-radius:4px;white-space:nowrap}
+.delta.over{color:var(--crit-ink);background:color-mix(in srgb,var(--crit) 12%,transparent)}
+.delta.under{color:var(--good-ink);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.pctcell{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.trendcell{display:flex;gap:8px;align-items:center;white-space:nowrap}
+.trendcell .note{font-size:var(--t-xs)}
+.pill.src{color:var(--accent);text-decoration:none;white-space:normal;line-height:1.25;max-width:170px}
+.pill.src:hover{border-color:var(--accent)}
+#firmTable td{vertical-align:middle}
+.scrim{position:fixed;inset:0;background:rgba(6,16,15,.48);z-index:40;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.scrim.on{opacity:1;visibility:visible;transition:opacity .35s ease}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(780px,100vw);background:var(--bg);z-index:41;box-shadow:-16px 0 48px rgba(0,0,0,.22);transform:translateX(100%);visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .35s;display:flex;flex-direction:column}
+.drawer.on{transform:none;visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.drawer-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) 20px 10px;background:var(--surface);border-bottom:1px solid var(--line)}
+.drawer-nav{display:flex;gap:8px;align-items:center}
+.drawer-nav .icon-btn:disabled{opacity:.4;cursor:default}
+.drawer-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:var(--sp-5) 24px var(--sp-7);display:grid;gap:var(--sp-5);align-content:start}
+.drawer-body>*{min-width:0}
+.dstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:var(--sp-4) 0}
+.dstats>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dstats .big{font:700 2.4rem/1 var(--f-display)}
+.dstats .mid{font:700 1.4rem/1 var(--f-display)}
+body.lock{overflow:hidden}
+@media (max-width:599px){ .drawer-body{padding:16px 16px 48px} .drawer-top{padding-left:12px;padding-right:12px} .dstats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.stepper{list-style:none;margin:0 0 var(--sp-4);padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-3)}
+.stepper li{display:flex;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-2);background:var(--surface);transition:border-color .35s,background .35s;min-width:0}
+.stepper .n{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:600 var(--t-xs)/1 var(--f-data);border:1.5px solid var(--line);color:var(--muted);transition:background .35s,border-color .35s,color .35s}
+.stepper b{display:block;font-size:var(--t-sm);line-height:1.2}
+.stepper li div span{font-size:var(--t-xs);color:var(--muted)}
+.stepper li.active{border-color:var(--accent);background:var(--accent-soft)}
+.stepper li.active .n{border-color:var(--accent);color:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+.stepper li.done .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent)}}
+@media (max-width:767px){ .stepper{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.replay{display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin:0 0 var(--sp-5)}
+#x-table td:first-child{white-space:normal;min-width:120px}
+#x-table td:nth-child(2){white-space:normal;min-width:110px;max-width:200px;overflow-wrap:anywhere}
+.replay .hint{font-size:var(--t-xs);color:var(--muted);max-width:60ch}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head" role="banner">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="CarbonSetu home">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="7" fill="var(--accent)"/><path d="M5 20 Q15 7 25 20" fill="none" stroke="var(--accent-ink)" stroke-width="2.4" stroke-linecap="round"/><path d="M5 20h20M10 20v-4M15 20v-7M20 20v-4" stroke="var(--accent-ink)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>CarbonSetu <small>CBAM READINESS</small></span>
+    </a>
+    <button class="icon-btn menu-btn" id="menuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav" id="siteNav" aria-label="Main">
+      <a href="#home">Overview</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#calculator">Rate a company</a>
+      <a href="#extract">AI extraction</a>
+      <a href="#policy">Policy simulator</a>
+      <a href="#investor">Investor case</a>
+      <a href="#learn">Learn</a>
+      <a href="#method">Method</a>
+    </nav>
+    <button class="icon-btn theme-btn" id="themeBtn" aria-label="Switch colour theme" title="Switch colour theme">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 2a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- ============ HOME ============ -->
+<section class="view" id="v-home" data-view="home" aria-labelledby="h-home">
+  <div class="wrap">
+    <div class="hero">
+      <div class="stack">
+        <span class="eyebrow">EU CBAM · definitive period since 1 Jan 2026</span>
+        <h1 id="h-home">Which Indian exporters are ready for Europe's carbon border tax, and what will it <em>cost them in rupees</em>?</h1>
+        <p class="lede">CarbonSetu rates firms in steel, aluminium, cement and fertilisers on two numbers: a 0–100 Sustainability Index Score that says how prepared it is, and the share of EBITDA that CBAM could take each year to 2034. Every score shows how much of it rests on verified data.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#calculator">Rate a company
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+          <a class="btn btn-ghost" href="#dashboard">See the 8-firm dashboard</a>
+        </div>
+      </div>
+      <aside class="ticket" aria-label="Example: CBAM charge on one tonne of Indian hot-rolled coil in 2030">
+        <div class="ticket-head"><span>CN 7208 · hot-rolled coil · 1 t</span><span>2030</span></div>
+        <div class="ticket-body">
+          <div class="ticket-row"><span>EU benchmark, BF/BOF route</span><b>1.370 tCO₂e</b></div>
+          <div class="ticket-row"><span>Free allocation left (51.5%)</span><b>0.706 tCO₂e</b></div>
+          <div class="ticket-row"><span>Charge with verified data (2.45 t)</span><b id="tk-ver">€220</b></div>
+          <div class="ticket-row big"><span>Charge on EU default (5.56 t)</span><b id="tk-def">€612</b></div>
+        </div>
+        <div class="ticket-foot">Base-case price €126/t in 2030. Tata Steel's reported intensity; EU default 4.28 t plus 30% mark-up.</div>
+      </aside>
+    </div>
+
+    <div class="section">
+      <div class="stats" role="list">
+        <div class="stat reveal" role="listitem"><span class="v num">€5.30 bn</span><span class="l">CBAM goods India sold to the EU in 2025</span><span class="s">83% iron &amp; steel · Eurostat</span></div>
+        <div class="stat reveal" role="listitem"><span class="v num">6.6%</span><span class="l">of JSW Steel's EBITDA at risk in 2030</span><span class="s">base case, verified data</span></div>
+        <div class="stat reveal" role="listitem"><span class="v num">2.8×</span><span class="l">higher charge on EU default values</span><span class="s">HRC, 2030, vs verified 2.45 t</span></div>
+        <div class="stat reveal" role="listitem"><span class="v num">43–45%</span><span class="l">of Indian steel's emissions are charged from 2026, not 2.5%</span><span class="s">free allocation applies to the EU benchmark, not to actual emissions</span></div>
+      </div>
+    </div>
+
+    <div class="section grid-12">
+      <div class="span-5 stack">
+        <span class="eyebrow">Phase-out</span>
+        <h2>The cost arrives in 2030</h2>
+        <p>Importers only pay for emissions above the EU benchmark's free allocation. As that allocation falls, the charge on every tonne rises. Between 2029 and 2030 the exposed share more than doubles, from 22.5% to 48.5%, and the charge on a tonne of hot-rolled coil rises about 44%.</p>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Free allocation EU producers keep</span><span><i style="background:var(--ochre)"></i>Share exposed to CBAM</span></div>
+        <p class="note">Current law, Reg. (EU) 2023/956. A July 2026 proposal, COM(2026) 616, would stretch this to 2038; it is not law.</p>
+      </div>
+      <div class="span-7">
+        <div class="chart-card">
+          <div class="ruler" id="ruler" role="img" aria-label="Free allocation factor by year: 2026 97.5%, 2027 95%, 2028 90%, 2029 77.5%, 2030 51.5%, 2031 39%, 2032 26.5%, 2033 14%, 2034 0%."></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">What the proposal promised</span><h2>Four deliverables, all on this site</h2></div>
+      <ol class="deliv">
+        <li><a class="card deliv-card" href="#dashboard"><span class="q">Deliverable 1</span><h3>Ranking dashboard</h3><p class="note">8 listed firms ranked on the Sustainability Index Score and EBITDA-at-Risk to 2034, each against its sector's EU benchmark. Hydrogen and electricity tracked as emerging sectors; unlisted firms carry a confidence tier.</p><span class="go">Open dashboard →</span></a></li>
+        <li><a class="card deliv-card" href="#extract"><span class="q">Deliverable 2</span><h3>Live AI extraction from a BRSR report</h3><p class="note">Upload a BRSR PDF or paste its text. Claude returns Scope 1, Scope 2, energy, output and intensity, each with the page and quote it came from.</p><span class="go">Run the demo →</span></a></li>
+        <li><a class="card deliv-card" href="#policy"><span class="q">Deliverable 3</span><h3>Policy simulator</h3><p class="note">Compare six ways to share CBAM costs between firms and government: from doing nothing to an Indian carbon price, verification support and export rebates.</p><span class="go">Compare options →</span></a></li>
+        <li><a class="card deliv-card" href="#investor"><span class="q">Deliverable 4</span><h3>Investor case and five-year plan</h3><p class="note">Pitch summary, pricing for four buyers, a five-year revenue and cost plan you can adjust, and a downloadable report.</p><span class="go">See the plan →</span></a></li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">How it works</span><h2>Two scores from public filings</h2></div>
+      <ol class="steps">
+        <li><h3>Read the filings</h3><p>Claude extracts Scope 1 and 2, production and energy from BRSR, annual reports and credit-rating notes. Each figure carries its source page.</p></li>
+        <li><h3>Price the carbon</h3><p>We apply the product's EU benchmark, the year's free allocation and three EU price paths, then convert to rupees against the firm's EBITDA.</p></li>
+        <li><h3>Score sustainability</h3><p>Emissions, transition plan, disclosure and efficiency roll into a 0–100 score. A tier of A, B or C says how much rests on verified data.</p></li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Who uses it</span><h2>Built for four buyers</h2></div>
+      <div class="aud">
+        <article class="card"><span class="q">Banks, NBFCs, funds</span><h3>Price transition risk</h3><p class="note">Which borrowers in steel and aluminium lose margin to CBAM, and which are hedged by verified data.</p></article>
+        <article class="card"><span class="q">EU importers</span><h3>Pick credible suppliers</h3><p class="note">Suppliers with verified installation data cost a third as much in certificates as those on defaults.</p></article>
+        <article class="card"><span class="q">Indian producers</span><h3>Benchmark against peers</h3><p class="note">See your score next to sector peers and what each lever is worth in rupees.</p></article>
+        <article class="card"><span class="q">Government, think tanks</span><h3>Test who should pay</h3><p class="note">Model an Indian carbon price that keeps CBAM revenue at home instead of in Brussels.</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="view" id="v-dashboard" data-view="dashboard" aria-labelledby="h-dash" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Deliverable 1 · 8 listed firms · FY2025-26 data</span>
+      <h1 id="h-dash" style="font-size:var(--t-2xl)">Sustainability Index and EBITDA-at-Risk dashboard</h1>
+      <p class="lede">Steel carries almost all the risk. Cement and fertiliser firms export next to nothing to the EU, so their charge is zero even when their readiness is low.</p>
+    </div>
+
+    <form class="toolbar simbar" id="dashControls" aria-label="Scenario" onsubmit="return false">
+      <div class="row1">
+        <div class="field"><span class="lbl" id="lbl-sector">Sector</span><div class="chips" role="group" aria-labelledby="lbl-sector" id="sectorChips"></div></div>
+        <div class="field"><label for="d-year">Year</label><select id="d-year"></select></div>
+        <div class="field"><label for="d-price">EU carbon price</label><select id="d-price"><option value="low">Low (€85 in 2030)</option><option value="base" selected>Base (€126 in 2030)</option><option value="high">High (€145 in 2030)</option></select></div>
+        <div class="field"><label for="d-basis">Emissions data</label><select id="d-basis"><option value="verified" selected>Verified / reported</option><option value="default">EU default values</option></select></div>
+        <div class="field"><label for="d-rule">Phase-out rule</label><select id="d-rule"><option value="law" selected>Current law (to 2034)</option><option value="prop">Proposal (to 2038)</option></select></div>
+        <div class="field"><span class="lbl" id="lbl-cur">Money in</span><div class="seg" role="group" aria-labelledby="lbl-cur" id="curSeg"><button type="button" data-c="inr" aria-pressed="true">₹ crore</button><button type="button" data-c="eur" aria-pressed="false">€ million</button></div></div>
+        <label class="switch" for="d-stress"><input type="checkbox" id="d-stress"> Add indirect emissions (stress test)</label>
+      </div>
+      <div class="refchips" id="refChips" aria-live="polite"></div>
+    </form>
+
+    <div class="lens"><span class="lbl" id="lbl-lens">View as</span><div class="seg" role="group" aria-labelledby="lbl-lens" id="lensSeg"></div></div>
+    <div class="kpis" id="kpis" aria-live="polite"></div>
+    <p class="callout teal lens-note" id="lensNote" aria-live="polite" hidden></p>
+
+    <div class="grid-12" style="margin-top:var(--sp-5)">
+      <div class="span-5 chart-card">
+        <header><div><h3>Sustainability Index Score</h3><p>0–100, higher is better prepared</p></div></header>
+        <div class="chart" id="c-score" role="img"></div>
+        <details class="tbl"><summary>Show as table</summary><div class="table-wrap" id="t-score"></div></details>
+      </div>
+      <div class="span-7 chart-card">
+        <header><div><h3>EBITDA-at-Risk, 2026–2034</h3><p>CBAM cost as % of FY26 EBITDA, firms with EU exposure</p></div></header>
+        <div class="chart" id="c-risk" role="img"></div>
+        <details class="tbl"><summary>Show as table</summary><div class="table-wrap" id="t-risk"></div></details>
+      </div>
+      <div class="span-12 chart-card">
+        <header><div><h3 id="h-matrix">Risk versus Sustainability Index, 2030</h3><p>Bubble size shows estimated EU volume. Top-left is where lenders should look first: high exposure, low preparation.</p></div></header>
+        <div class="chart" id="c-matrix" role="img"></div>
+      </div>
+      <div class="span-12 chart-card">
+        <header><div><h3>Each firm against its sector's EU benchmark</h3><p>Emissions per tonne used by CBAM. Further right means more certificates per tonne exported.</p></div></header>
+        <div class="chart" id="c-strips" role="img"></div>
+        <p class="note">Fertilisers: neither Chambal nor Coromandel discloses emissions per tonne, so both would be charged at India's default (urea 2.17, DAP 0.81 tCO₂e/t) until they do. Aluminium is shown on CBAM's direct-only basis; including captive power, Hindalco reports 19.6 tCO₂e/t.</p>
+      </div>
+      <div class="span-7 chart-card" id="unlistedCard">
+        <header><div><h3>Unlisted exporters: what the confidence tier changes</h3><p>An illustrative example, not a real company</p></div><span class="pill sev"><span class="dot" aria-hidden="true"></span>Tier C</span></header>
+        <div id="unlistedBody"></div>
+        <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap"><button type="button" class="btn btn-primary" id="openUnlisted">Open this example in the calculator</button></div>
+      </div>
+      <div class="span-5 chart-card">
+        <header><div><h3>Emerging sectors</h3><p>In the framework, tracked but not yet scored</p></div></header>
+        <div class="stack" style="gap:var(--sp-4)">
+          <div class="stack" style="gap:6px"><h4>Hydrogen · CN 2804 10 00</h4><p class="note">India's EU default is 14.03 tCO₂e/t (direct only), reflecting grey hydrogen from gas. India sells almost none to the EU today. The National Green Hydrogen Mission and SECI's green ammonia auctions (₹55.75/kg in the first round) are the route in.</p></div>
+          <div class="stack" style="gap:6px"><h4>Electricity · CN 2716 00 00</h4><p class="note">CBAM prices only direct emissions for electricity. India has no grid link to the EU and no published EU default value, so there is no exposure. CarbonSetu will add it if cross-border trade with the EU begins.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:var(--sp-6)">
+      <div class="firm-head" style="margin-bottom:var(--sp-4)">
+        <h2 style="font-size:var(--t-xl)">All firms</h2>
+        <div class="legend" aria-label="Index score bar segments"><span><i class="pc1"></i>Emissions 35%</span><span><i class="pc2"></i>Transition 25%</span><span><i class="pc3"></i>Disclosure 20%</span><span><i class="pc4"></i>Efficiency 20%</span></div>
+      </div>
+      <div class="table-wrap"><table id="firmTable" aria-describedby="tableCap"><caption class="sr-only" id="tableCap">Sustainability Index Score, tier and CBAM cost by firm. Column headers sort the table.</caption></table></div>
+      <p class="note" style="margin-top:var(--sp-3)">Click a firm for its deep-dive. "vs EU benchmark" compares the firm's emissions per tonne with the EU benchmark for its production route. €/t is the certificate cost on each tonne sold to the EU, shown even for firms that export none today. EU volumes are CarbonSetu estimates; no firm reports them. Tier A ● company-reported and assured · B ◐ partly reported · C ○ mostly estimated.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CALCULATOR ============ -->
+<section class="view" id="v-calculator" data-view="calculator" aria-labelledby="h-calc" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Input → output</span>
+      <h1 id="h-calc" style="font-size:var(--t-2xl)">Rate a company</h1>
+      <p class="lede">Enter what you know about one product line. You get the CBAM charge for every year to 2034, the rupee value of verified data, and a Sustainability Index Score with its confidence tier.</p>
+    </div>
+    <div class="calc">
+      <form class="form-card" id="calcForm" aria-label="Company inputs" novalidate>
+        <span class="sample-flag" id="sampleFlag">● Example loaded: an unlisted steel exporter</span>
+        <fieldset>
+          <legend>Company and product</legend>
+          <div class="field full"><label for="c-name">Company name</label><input type="text" id="c-name" value="Example Steels Pvt Ltd" autocomplete="off"></div>
+          <div class="field full"><label for="c-product">Product (CN code)</label><select id="c-product"></select></div>
+          <div class="field full" id="routeField"><label for="c-route">Production route</label><select id="c-route"></select><span class="hint" id="bmHint"></span></div>
+        </fieldset>
+        <fieldset>
+          <legend>Volumes and money</legend>
+          <div class="field"><label for="c-vol">Tonnes sold to the EU per year</label><input type="number" id="c-vol" min="0" step="1000" value="120000" inputmode="numeric"></div>
+          <div class="field"><label for="c-ebitda">EBITDA (₹ crore)</label><input type="number" id="c-ebitda" min="1" step="10" value="1800" inputmode="decimal"></div>
+          <div class="field"><label for="c-pass">Share of the charge you absorb (%)</label><input type="number" id="c-pass" min="0" max="100" step="5" value="100" inputmode="numeric"><span class="hint">100% = you cut your price by the full CBAM cost</span></div>
+          <div class="field"><label for="c-india">Carbon price already paid in India (€/t)</label><input type="number" id="c-india" min="0" max="200" step="1" value="0" inputmode="decimal"><span class="hint">Deductible only once the EU recognises it</span></div>
+        </fieldset>
+        <fieldset>
+          <legend>Emissions</legend>
+          <div class="field"><label for="c-int">Direct emissions intensity (tCO₂e/t)</label><input type="number" id="c-int" min="0" step="0.01" value="2.60" inputmode="decimal"></div>
+          <div class="field"><label for="c-ind">Indirect, from electricity (tCO₂e/t)</label><input type="number" id="c-ind" min="0" step="0.01" value="0.20" inputmode="decimal"><span class="hint" id="indHint"></span></div>
+          <div class="field full"><label for="c-basis">How solid is this number?</label><select id="c-basis"><option value="A">Verified or assured (BRSR Core reasonable assurance, accredited verifier)</option><option value="B">Company-reported, not assured</option><option value="C" selected>Our estimate or a credit-rating note</option></select></div>
+          <div class="field"><label for="c-price">EU price path</label><select id="c-price"><option value="low">Low</option><option value="base" selected>Base</option><option value="high">High</option></select></div>
+          <div class="field"><label for="c-rule">Phase-out rule</label><select id="c-rule"><option value="law" selected>Current law</option><option value="prop">Proposal to 2038</option></select></div>
+        </fieldset>
+        <fieldset>
+          <legend>Transition and disclosure</legend>
+          <div class="field full"><span class="lbl">Transition plan</span>
+            <div class="checks" id="transChecks">
+              <label><input type="checkbox" id="t1" data-w="20"> Net-zero target year announced</label>
+              <label><input type="checkbox" id="t2" data-w="20" checked> Interim 2030 intensity target</label>
+              <label><input type="checkbox" id="t3" data-w="20"> Target validated by SBTi</label>
+              <label><input type="checkbox" id="t4" data-w="15" checked> Renewable power or fuel-switch target</label>
+              <label><input type="checkbox" id="t5" data-w="15"> Green bond, SLB or sustainability-linked loan</label>
+              <label><input type="checkbox" id="t6" data-w="10"> Internal carbon price used in capex decisions</label>
+            </div></div>
+          <div class="field full"><span class="lbl">Disclosure</span>
+            <div class="checks" id="discChecks">
+              <label><input type="checkbox" id="k1" data-w="35"> BRSR Core with reasonable assurance</label>
+              <label><input type="checkbox" id="k2" data-w="25" checked> Emissions per tonne of product disclosed</label>
+              <label><input type="checkbox" id="k3" data-w="25"> Installation-level data ready for EU verification</label>
+              <label><input type="checkbox" id="k4" data-w="15"> CDP, TCFD or ISSB S2 report</label>
+            </div></div>
+          <div class="field full"><label for="c-eff">Efficiency levers in place: <span class="num" id="effOut">40</span>/100</label><input type="range" id="c-eff" min="0" max="100" step="5" value="40"><span class="hint">Energy intensity vs peers, scrap or EAF share, waste-heat recovery, green power share</span></div>
+        </fieldset>
+        <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" id="loadJSW">Load JSW Steel figures</button>
+          <button type="button" class="btn btn-ghost" id="resetCalc">Reset example</button>
+        </div>
+      </form>
+
+      <div class="stack" id="calcOut" aria-live="polite">
+        <div class="result-head" id="calcKpis"></div>
+        <div class="chart-card">
+          <header><div><h3 id="calcChartTitle">CBAM charge by year</h3><p>₹ crore, your data vs EU default values</p></div></header>
+          <div class="chart" id="c-calc" role="img"></div>
+        </div>
+        <div class="chart-card">
+          <header><div><h3>Sustainability Index Score</h3><p id="calcScoreSub"></p></div></header>
+          <div class="pillars" id="calcPillars"></div>
+        </div>
+        <div class="chart-card">
+          <header><div><h3>What cutting emissions saves you</h3><p>Lower the direct intensity and see the CBAM saved</p></div></header>
+          <div class="field"><label for="c-cut">Cut direct emissions per tonne by <span class="num" id="cutOut">20%</span></label><input type="range" id="c-cut" min="0" max="80" step="5" value="20"></div>
+          <p class="hint">Typical steel levers: more scrap or pellets (5–10%), top-gas and waste-heat recovery (3–5%), gas-based DRI instead of coal (30–40%), scrap EAF (70% or more). Cement: lower clinker ratio and alternative fuels.</p>
+          <div class="result-head" id="cutKpis"></div>
+        </div>
+        <div class="table-wrap" id="calcTable"></div>
+        <div class="callout" id="calcCallout"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POLICY ============ -->
+<section class="view" id="v-policy" data-view="policy" aria-labelledby="h-pol" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Deliverable 3 · for government and think tanks</span>
+      <h1 id="h-pol" style="font-size:var(--t-2xl)">Who keeps the carbon revenue?</h1>
+      <p class="lede">Today India has no carbon price the EU recognises, so every euro of CBAM goes to Brussels. An explicit Indian price, once recognised under Article 9, is deducted from the CBAM charge and stays in India.</p>
+    </div>
+    <form class="toolbar" id="polControls" aria-label="Policy inputs" onsubmit="return false">
+      <div class="field" style="min-width:min(280px,100%);flex:1"><label for="p-india">Indian carbon price: <span class="num" id="pIndiaOut">€25</span>/t</label><input type="range" id="p-india" min="0" max="100" step="5" value="25"></div>
+      <div class="field"><span class="lbl" id="lbl-preset">Presets</span><div class="seg" role="group" aria-labelledby="lbl-preset" id="presetSeg"></div></div>
+      <div class="field" style="min-width:min(240px,100%);flex:1"><label for="p-recycle">Revenue returned to exporters: <span class="num" id="pRecOut">50%</span></label><input type="range" id="p-recycle" min="0" max="100" step="10" value="50"></div>
+      <div class="field"><label for="p-scope">Scope</label><select id="p-scope"><option value="india" selected>All Indian steel &amp; aluminium to the EU</option><option value="sample">Our 4 exposed firms</option></select></div>
+    </form>
+    <div class="kpis" id="polKpis" aria-live="polite"></div>
+    <div class="grid-12" style="margin-top:var(--sp-5)">
+      <div class="span-8 chart-card">
+        <header><div><h3>Where the charge goes each year</h3><p>₹ crore, base price path, current law</p></div></header>
+        <div class="chart" id="c-policy" role="img"></div>
+        <details class="tbl"><summary>Show as table</summary><div class="table-wrap" id="t-policy"></div></details>
+      </div>
+      <div class="span-4 stack">
+        <div class="callout teal"><strong>Read this first.</strong> An Indian price doesn't lower the total carbon cost on a tonne. It moves part of it from the EU to India, where it can fund the transition. Returning revenue to exporters lowers their net burden.</div>
+        <div class="card stack"><h3>Assumptions</h3>
+          <p class="note">India scope: 2025 EU imports from India of 4.01 Mt iron and steel and 313 kt aluminium (Eurostat), held flat. Steel at 2.45 tCO₂e/t on the BF/BOF hot-rolled benchmark; aluminium at 1.87 direct on the primary benchmark. Deduction requires EU recognition of the Indian price, which hasn't happened yet.</p></div>
+      </div>
+    </div>
+    <div class="section" style="margin-top:var(--sp-7)">
+      <div class="section-head"><span class="eyebrow">Ways to share the cost</span><h2 style="font-size:var(--t-xl)">Six options, side by side</h2>
+        <p>All Indian steel and aluminium sent to the EU, 2026–34, base price, current law. The Indian price and revenue share come from the controls above.</p></div>
+      <form class="toolbar" id="optControls" aria-label="Cost-sharing assumptions" onsubmit="return false" style="position:static">
+        <div class="field" style="min-width:min(240px,100%);flex:1"><label for="o-default">Exports now priced at EU defaults: <span class="num" id="oDefOut">50%</span></label><input type="range" id="o-default" min="0" max="100" step="10" value="50"></div>
+        <div class="field" style="min-width:min(240px,100%);flex:1"><label for="o-rebate">Export rebate paid by government: <span class="num" id="oRebOut">30%</span></label><input type="range" id="o-rebate" min="0" max="100" step="10" value="30"></div>
+        <div class="field"><label for="o-prog">Cost of verification support (₹ cr)</label><input type="number" id="o-prog" min="0" step="50" value="500"></div>
+      </form>
+      <div class="grid-12" style="margin-top:var(--sp-5)">
+        <div class="span-12 chart-card">
+          <header><div><h3>Who pays under each option</h3><p>₹ crore, 2026–34. Government bars below zero are a fiscal cost.</p></div></header>
+          <div class="chart" id="c-options" role="img"></div>
+        </div>
+        <div class="span-12"><div class="table-wrap" id="t-options"></div></div>
+      </div>
+      <div class="callout" id="optCallout" style="margin-top:var(--sp-4)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section class="view" id="v-learn" data-view="learn" aria-labelledby="h-learn" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Learning hub · IIMA Carbon Finance</span>
+      <h1 id="h-learn" style="font-size:var(--t-2xl)">CBAM, explained in six parts</h1>
+      <p class="lede">From what CBAM is to how a bank should read a readiness score. Each part links back to the course session it draws on.</p>
+    </div>
+    <div class="learn-grid">
+      <nav class="toc" aria-label="On this page">
+        <a href="#l-basics" data-jump>1. What CBAM is</a>
+        <a href="#l-formula" data-jump>2. The formula</a>
+        <a href="#l-india" data-jump>3. India's position</a>
+        <a href="#l-course" data-jump>4. Course map</a>
+        <a href="#l-gloss" data-jump>5. Glossary</a>
+        <a href="#l-quiz" data-jump>6. Check yourself</a>
+      </nav>
+      <article class="prose">
+        <h2 id="l-basics">1. What CBAM is</h2>
+        <p>The Carbon Border Adjustment Mechanism charges EU importers for the carbon emitted when certain goods are made abroad, so that imports pay the same carbon price as EU production under the EU ETS. It covers iron and steel, aluminium, cement, fertilisers, hydrogen and electricity.</p>
+        <div class="acc">
+          <details open><summary>What changed on 1 January 2026</summary><div class="body"><p>The transitional reporting phase ended. Importers bringing in more than 50 tonnes a year of covered goods must be authorised declarants and buy certificates for 2026 imports. Certificate sales open on 1 February 2027, and the first annual declaration is due on 30 September 2027.</p></div></details>
+          <details><summary>Who actually pays</summary><div class="body"><p>The EU importer buys the certificates. In practice the cost flows back to the Indian exporter through a lower price or a lost order. CarbonSetu assumes the exporter absorbs it in full; you can change that on the calculator.</p></div></details>
+          <details><summary>Direct vs indirect emissions</summary><div class="body"><p>Direct emissions come from the plant itself. Indirect emissions come from the electricity it uses, including power from its own captive plant. For steel, aluminium and hydrogen, CBAM prices only direct emissions today. For cement and fertilisers it prices both, using India's default grid factor of 0.726 tCO₂/MWh.</p></div></details>
+          <details><summary>Default values and why they hurt</summary><div class="body"><p>An exporter that can't supply verified data is charged at the EU's default value for its country and product, plus a mark-up: 10% in 2026, 20% in 2027 and 30% from 2028 (1% for fertilisers). India's default for hot-rolled steel is 4.28 tCO₂e/t, against Tata Steel's reported 2.45.</p></div></details>
+        </div>
+
+        <h2 id="l-formula">2. The formula</h2>
+        <p>Certificates owed on one tonne equal its embedded emissions minus the free allocation an EU plant would get for the same product.</p>
+        <div class="formula" aria-label="CBAM cost equals EU volume times the maximum of zero and embedded emissions minus benchmark times free allocation factor, times EU price minus Indian price">CBAM cost = Volume × max(0, SEE − BM × FA) × (P<sub>EU</sub> − P<sub>India</sub>)</div>
+        <div class="acc">
+          <details open><summary>Worked example: 1 t of JSW hot-rolled coil in 2030</summary><div class="body">
+            <p>SEE = 2.36 tCO₂e/t (JSW's reported FY26 intensity). BM = 1.370 for the BF/BOF route. FA = 51.5% in 2030.</p>
+            <p class="num">2.36 − 1.370 × 0.515 = 1.654 tCO₂e owed</p>
+            <p class="num">1.654 × €126 = €208 per tonne ≈ ₹22,100</p>
+            <p>On the EU default the same tonne owes 4.28 × 1.3 − 0.706 = 4.86 t, or €612.</p></div></details>
+        </div>
+
+        <h2 id="l-india">3. India's position</h2>
+        <ul>
+          <li>India exported €5.30 bn of CBAM goods to the EU in 2025, 83% of it iron and steel.</li>
+          <li>The EU–India FTA, concluded on 27 January 2026, gives no CBAM exemption. A CBAM annex sets a work plan on verifiers and crediting Indian carbon prices.</li>
+          <li>The Carbon Credit Trading Scheme set intensity targets for aluminium and cement in 2025. Steel targets were in draft in mid-2026. The EU does not yet recognise the CCTS for deductions.</li>
+          <li>The Green Steel Taxonomy (Dec 2024) calls steel green below 2.2 tCO₂e/t. No large Indian producer qualifies yet.</li>
+        </ul>
+
+        <h2 id="l-course">4. Course map</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Session</th><th class="wrap">What it gives CarbonSetu</th></tr></thead>
+          <tbody>
+            <tr><td>S2 · Carbon accounting</td><td class="wrap">Scope 1/2/3, boundaries, the E-liability method behind embedded emissions</td></tr>
+            <tr><td>S4 · ETS, CBAM, CCTS</td><td class="wrap">How CBAM works, the Article 9 deduction, CCTS targets</td></tr>
+            <tr><td>S7 · Green hydrogen</td><td class="wrap">The route to low-carbon DRI steel and green ammonia</td></tr>
+            <tr><td>S8 · Disclosures and indexing</td><td class="wrap">BRSR, ISSB, and within-sector scoring used for our peer bands</td></tr>
+            <tr><td>S9 · Internal carbon pricing</td><td class="wrap">Shadow pricing on projected income, the basis of EBITDA-at-Risk; Ambuja case</td></tr>
+            <tr><td>S10 · Green finance</td><td class="wrap">SLBs and transition loans that count in the transition pillar</td></tr>
+          </tbody></table></div>
+
+        <h2 id="l-gloss">5. Glossary</h2>
+        <div class="field" style="max-width:360px"><label for="glossSearch">Filter terms</label><input type="search" id="glossSearch" placeholder="e.g. benchmark"></div>
+        <dl class="gloss" id="gloss"></dl>
+
+        <h2 id="l-quiz">6. Check yourself</h2>
+        <div class="quiz stack" id="quiz"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="view" id="v-method" data-view="method" aria-labelledby="h-method" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Version 1 · 2 November 2026</span>
+      <h1 id="h-method" style="font-size:var(--t-2xl)">Method and sources</h1>
+      <p class="lede">Every number on this site traces to a filing, an EU regulation or a stated assumption. Change the assumptions on the calculator to see how much they matter.</p>
+    </div>
+    <div class="grid-12">
+      <div class="span-6 stack">
+        <h2 style="font-size:var(--t-xl)">Sustainability Index Score</h2>
+        <div class="table-wrap"><table><thead><tr><th>Pillar</th><th class="n">Weight</th><th class="wrap">How it's scored</th></tr></thead><tbody>
+          <tr><td>Emissions</td><td class="n">35%</td><td class="wrap">Intensity placed in a sector band. Steel 1.37 (EU benchmark) to 4.28 (India default); aluminium 4 to 20 incl. power; cement 0.45 to 0.80 tCO₂e/t</td></tr>
+          <tr><td>Transition plan</td><td class="n">25%</td><td class="wrap">Net-zero year, interim target, SBTi, RE or fuel switch, green finance, internal carbon price</td></tr>
+          <tr><td>Disclosure</td><td class="n">20%</td><td class="wrap">BRSR Core assurance, product-level intensity, installation data, CDP/ISSB</td></tr>
+          <tr><td>Efficiency</td><td class="n">20%</td><td class="wrap">Energy intensity vs peers, scrap/EAF share, green power, waste heat</td></tr>
+        </tbody></table></div>
+        <p class="note">Confidence tier: A = company-reported and assured; B = reported but unassured, or some proxies; C = mostly estimated. Compare with CRISIL's ESG method (E 35 / S 25 / G 40) and SEBI's "Core Transition Score".</p>
+      </div>
+      <div class="span-6 stack">
+        <h2 style="font-size:var(--t-xl)">EBITDA-at-Risk</h2>
+        <p>CBAM cost for the year divided by FY26 EBITDA, held flat. It assumes the exporter absorbs the full charge. The method follows S&amp;P Trucost's Carbon Earnings at Risk approach, applied to CBAM.</p>
+        <div class="table-wrap"><table><thead><tr><th>Input</th><th class="wrap">Value</th></tr></thead><tbody id="assumpTbody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="section" style="margin-top:var(--sp-6)">
+      <h2 style="font-size:var(--t-xl);margin-bottom:var(--sp-4)">How the data pipeline works</h2>
+      <ol class="pipe">
+        <li><b>Collect</b><span>BRSR, annual reports and credit-rating notes are pulled from NSE, BSE and rating-agency sites.</span></li>
+        <li><b>Extract</b><span>Claude reads each filing and returns emissions, energy and output with the page and quote for every figure. <a href="#extract">Try it</a>.</span></li>
+        <li><b>Check</b><span>Units are normalised; Scope 1 + 2 ÷ output is compared with the reported intensity; gaps over 10% are flagged for review.</span></li>
+        <li><b>Score</b><span>The CBAM cost model and the Sustainability Index Score run on the checked figures; each gets a confidence tier.</span></li>
+        <li><b>Refresh</b><span>n8n fetches the quarterly CBAM certificate price and new filings, then recomputes. The production dashboard is built in Lovable or Replit.</span></li>
+      </ol>
+    </div>
+    <div class="section" style="margin-top:var(--sp-6)">
+      <h2 style="font-size:var(--t-xl);margin-bottom:var(--sp-4)">Firm data and sources</h2>
+      <div class="table-wrap"><table id="srcTable"></table></div>
+      <p class="note" style="margin-top:var(--sp-3)">Secondary sources such as cbamguide.com were used for benchmark values; check them against the Official Journal text of Implementing Regulations (EU) 2025/2620 and 2025/2621 before relying on them. Not investment advice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXTRACT ============ -->
+<section class="view" id="v-extract" data-view="extract" aria-labelledby="h-extract" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Deliverable 2 · live demo</span>
+      <h1 id="h-extract" style="font-size:var(--t-2xl)">Extract emissions data from a BRSR report</h1>
+      <p class="lede">Upload a company's BRSR (or annual report) as a PDF, or paste its Principle 6 section. Claude reads it and returns the figures CarbonSetu needs, each with the page and the exact words it came from.</p>
+    </div>
+    <ol class="stepper" id="x-steps" aria-label="Extraction pipeline">
+      <li><span class="n">1</span><div><b>Ingest</b><span>PDF or pasted text</span></div></li>
+      <li><span class="n">2</span><div><b>Locate</b><span>Principle 6 pages</span></div></li>
+      <li><span class="n">3</span><div><b>Extract</b><span>Figure, page, quote</span></div></li>
+      <li><span class="n">4</span><div><b>Validate</b><span>Cross-checks, tier</span></div></li>
+    </ol>
+    <div class="replay"><button type="button" class="btn btn-ghost" id="x-replay">▶ Instant demo replay</button><span class="hint">Replays the four steps on the sample excerpt with the offline extractor. No AI call, so it works without a network. Use it as the fallback in a live presentation.</span></div>
+    <div class="calc">
+      <div class="form-card">
+        <fieldset>
+          <legend>1. Choose a source</legend>
+          <div class="field full"><label for="x-file">BRSR or annual report (PDF)</label><input type="file" id="x-file" accept="application/pdf,.pdf,.txt"><span class="hint">Read in your browser. Only the pages that mention emissions or energy are sent to Claude.</span></div>
+          <div class="field full"><button type="button" class="btn btn-ghost" id="x-sample">Use sample excerpt (Tata Steel FY26)</button><span class="hint">Text laid out like BRSR Principle 6, built from Tata Steel's FY2025-26 ESG Factsheet figures.</span></div>
+          <div class="field full"><label for="x-text">Text Claude will read</label><textarea id="x-text" rows="12" spellcheck="false" placeholder="Paste the Principle 6 section of a BRSR here, or upload a PDF above."></textarea><span class="hint" id="x-count">0 characters</span></div>
+        </fieldset>
+        <fieldset>
+          <legend>2. Extract</legend>
+          <div class="field full" style="flex-direction:row;flex-wrap:wrap;gap:var(--sp-3)">
+            <button type="button" class="btn btn-primary" id="x-run">Extract with Claude</button>
+            <button type="button" class="btn btn-ghost" id="x-stop" hidden>Stop</button>
+            <button type="button" class="btn btn-ghost" id="x-offline">Run offline extractor</button>
+          </div>
+          <p class="hint full" id="x-engineNote">The first extraction asks you to allow this page to use Claude. It uses your own Claude usage.</p>
+        </fieldset>
+        <p class="note" id="x-status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="stack">
+        <div class="chart-card">
+          <header><div><h3 id="x-title">Extracted figures</h3><p id="x-engine">Nothing extracted yet. Try the sample excerpt.</p></div></header>
+          <div class="table-wrap" id="x-table"><table><thead><tr><th>Field</th><th class="n">Value</th><th>Unit</th><th>Page</th><th class="wrap">Evidence</th></tr></thead><tbody><tr><td colspan="5" class="note">Results appear here.</td></tr></tbody></table></div>
+        </div>
+        <div class="chart-card">
+          <header><div><h3>Checks</h3><p>What CarbonSetu verifies before a figure is scored</p></div></header>
+          <ul class="checklist" id="x-checks"><li class="note">Run an extraction to see the checks.</li></ul>
+        </div>
+        <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+          <button type="button" class="btn btn-primary" id="x-use" disabled>Use in calculator</button>
+          <button type="button" class="btn btn-ghost" id="x-dl" disabled hidden>Download JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVESTOR ============ -->
+<section class="view" id="v-investor" data-view="investor" aria-labelledby="h-inv" hidden>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Deliverable 4 · investor case</span>
+      <h1 id="h-inv" style="font-size:var(--t-2xl)">CarbonSetu investor case</h1>
+      <p class="lede" id="invLede">An annual-subscription ratings business for a market that turned real on 1 January 2026. The plan below is fully adjustable; every figure is a planning assumption.</p>
+    </div>
+    <div class="pitch">
+      <div><h4>Problem</h4><p>Banks, EU buyers and investors can't tell which Indian exporters are exposed to CBAM or prepared for it. Unlisted firms have no rating at all.</p></div>
+      <div><h4>Solution</h4><p>A Sustainability Index Score and EBITDA-at-Risk in rupees for every firm in CBAM sectors, with a confidence tier on each score.</p></div>
+      <div><h4>Why now</h4><p>Certificates for 2026 imports go on sale on 1 Feb 2027. The free-allocation cliff hits in 2030. Verified data saves a steelmaker up to ₹31,000 crore by 2034.</p></div>
+      <div><h4>Customers</h4><p>Banks and NBFCs, EU importers, Indian producers, and government or think tanks, on annual subscriptions.</p></div>
+      <div><h4>Edge</h4><p>Claude reads filings in minutes, so unlisted firms can be scored cheaply. Free calculators exist; none rate readiness or serve lenders.</p></div>
+      <div><h4>Ask</h4><p id="askText">Seed funding to reach break-even.</p></div>
+    </div>
+
+    <div class="section" style="margin-top:var(--sp-7)">
+      <div class="section-head"><span class="eyebrow">Pricing</span><h2 style="font-size:var(--t-xl)">Annual subscriptions for four buyers</h2></div>
+      <div class="plans">
+        <article class="card plan"><span class="eyebrow">Banks · NBFCs · funds</span><span class="price num">₹12 lakh/yr</span><ul><li>Full portfolio screen</li><li>EBITDA-at-Risk by borrower</li><li>Alerts when filings change a score</li></ul></article>
+        <article class="card plan"><span class="eyebrow">EU importers</span><span class="price num">€6,000/yr</span><ul><li>Supplier scores and tiers</li><li>Default vs verified cost per supplier</li><li>CN-code level lookup</li></ul></article>
+        <article class="card plan"><span class="eyebrow">Indian producers</span><span class="price num">₹3 lakh/yr</span><ul><li>Peer benchmark report</li><li>Lever-by-lever savings</li><li>Shareable rating badge</li></ul></article>
+        <article class="card plan"><span class="eyebrow">Government · think tanks</span><span class="price num">₹5 lakh/yr</span><ul><li>Policy simulator with sector data</li><li>Custom scenarios</li><li>Briefing support</li></ul></article>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:var(--sp-7)">
+      <div class="section-head"><span class="eyebrow">Five-year plan · FY2026-27 to FY2030-31</span><h2 style="font-size:var(--t-xl)">Revenue, costs and funding need</h2></div>
+      <form class="toolbar" id="invControls" aria-label="Plan assumptions" onsubmit="return false" style="position:static">
+        <div class="field"><label for="i-scen">Customer growth</label><select id="i-scen"><option value="0.6">Conservative (60% of base)</option><option value="1" selected>Base</option><option value="1.4">Aggressive (140% of base)</option></select></div>
+        <div class="field" style="min-width:min(220px,100%);flex:1"><label for="i-price">Annual price increase: <span class="num" id="iPriceOut">5%</span></label><input type="range" id="i-price" min="0" max="15" step="1" value="5"></div>
+        <div class="field" style="min-width:min(220px,100%);flex:1"><label for="i-fte">Cost per employee: <span class="num" id="iFteOut">₹30 lakh</span>/yr</label><input type="range" id="i-fte" min="15" max="60" step="5" value="30"></div>
+        <div class="field"><label for="i-ai">AI and data cost per firm rated (₹)</label><input type="number" id="i-ai" min="0" step="5000" value="20000"></div>
+      </form>
+      <div class="kpis" id="invKpis" aria-live="polite"></div>
+      <div class="grid-12" style="margin-top:var(--sp-5)">
+        <div class="span-12 chart-card">
+          <header><div><h3>Revenue, costs and EBITDA by year</h3><p>₹ crore</p></div></header>
+          <div class="chart" id="c-inv" role="img"></div>
+        </div>
+        <div class="span-12"><div class="table-wrap" id="t-inv"></div></div>
+      </div>
+      <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-4)">
+        <button type="button" class="btn btn-primary" id="i-dlReport" hidden>Download investor report (.html)</button>
+        <button type="button" class="btn btn-ghost" id="i-dlCsv" hidden>Download plan (.csv)</button>
+        <span class="note" id="i-dlNote" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="grid-12 section" style="margin-top:var(--sp-7)">
+      <div class="span-4 card stack"><h3>Key assumptions</h3><ul class="note" style="margin:0;padding-left:18px;display:grid;gap:4px">
+        <li>Paying customers (base): banks 3 → 45, EU importers 5 → 120, producers 10 → 280, government 1 → 9 by FY31</li>
+        <li>Firms rated: 100 in year one (the proposal's target), 1,500 by FY31</li>
+        <li>Team: 6 → 25 people; salaries rise 8% a year</li>
+        <li>Partner and verification costs 8% of revenue; sales and marketing 20% of revenue + ₹30 lakh</li>
+        <li>SEBI and legal: ₹40 lakh in year one, ₹25 lakh a year after</li>
+        <li>€1 = ₹106.12</li></ul></div>
+      <div class="span-4 card stack"><h3>Regulatory path (SEBI)</h3><ol class="note" style="margin:0;padding-left:18px;display:grid;gap:4px"><li><b>Year 1:</b> launch as a CBAM analytics tool for EU importers and producers, outside ESG-rating scope.</li><li><b>Months 6–18:</b> license data to a registered ESG Rating Provider for its Transition ("Parivartan") Score.</li><li><b>Year 2+:</b> a separate subsidiary registers as an ERP on a subscriber-pays model for banks and funds. The 2023 Master Circular (para 8) bars mixing subscriber-pays and issuer-pays.</li></ol></div>
+      <div class="span-4 card stack"><h3>What sets it apart</h3><p class="note">Free CBAM cost calculators and an open-source model for Indian steel exist. CarbonSetu adds a readiness rating, unlisted firms with confidence tiers, fertilisers, and a lender's view of EBITDA-at-Risk.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="h-firm" aria-hidden="true">
+  <div class="drawer-top">
+    <button type="button" class="btn btn-ghost" id="drawerClose">← Back to dashboard</button>
+    <div class="drawer-nav"><span class="note num" id="drawerPos"></span><button type="button" class="icon-btn" id="drawerPrev" aria-label="Previous firm">‹</button><button type="button" class="icon-btn" id="drawerNext" aria-label="Next firm">›</button></div>
+  </div>
+  <div class="drawer-body" id="firmBody"></div>
+</aside>
+
+<footer class="site-foot" role="contentinfo">
+  <div class="wrap">
+    <div class="stack"><strong style="font-family:var(--f-display);color:var(--ink)">CarbonSetu</strong><p>Group 1 · Carbon Finance, IIM Ahmedabad, Term V 2026-27. Prototype for discussion; figures are estimates, not investment advice.</p></div>
+    <nav aria-label="Footer"><a href="#dashboard">Dashboard</a><a href="#calculator">Rate a company</a><a href="#extract">AI extraction</a><a href="#policy">Policy simulator</a></nav>
+    <nav aria-label="Footer resources"><a href="#investor">Investor case</a><a href="#learn">Learn</a><a href="#method">Method &amp; sources</a></nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- DATA ---------------- */
+const YEARS=[2026,2027,2028,2029,2030,2031,2032,2033,2034];
+const FA={law:{2026:.975,2027:.95,2028:.90,2029:.775,2030:.515,2031:.39,2032:.265,2033:.14,2034:0},
+          prop:{2026:.975,2027:.95,2028:.915,2029:.81,2030:.59,2031:.48,2032:.375,2033:.27,2034:.15}};
+const PRICE={low:{2026:75,2027:75,2028:78,2029:80,2030:85,2031:88,2032:90,2033:92,2034:95},
+             base:{2026:82,2027:90,2028:100,2029:110,2030:126,2031:132,2032:138,2033:144,2034:150},
+             high:{2026:85,2027:100,2028:115,2029:130,2030:145,2031:155,2032:165,2033:175,2034:185}};
+const EURINR=106.12;
+const SECTORS=["Steel","Aluminium","Cement","Fertilisers"];
+const SCOL={Steel:"var(--s1)",Aluminium:"var(--s2)",Cement:"var(--s3)",Fertilisers:"var(--s4)"};
+const W={emis:.35,trans:.25,disc:.20,eff:.20};
+const BAND={Steel:[1.37,4.28],Aluminium:[4,20],Cement:[0.45,0.80],Fertilisers:[0.9,3.3]};
+
+const PRODUCTS={
+  hrc:{label:"Hot-rolled flat steel · CN 7208",sector:"Steel",routes:{"BF/BOF":1.370,"DRI/EAF":0.481,"Scrap/EAF":0.072},dflt:4.28,indirectPriced:false},
+  pig:{label:"Pig iron · CN 7201",sector:"Steel",routes:{"Any route":1.210},dflt:2.53,indirectPriced:false},
+  alu:{label:"Unwrought aluminium · CN 7601",sector:"Aluminium",routes:{"Primary":1.423,"Secondary":0.091},dflt:1.87,indirectPriced:false},
+  cem:{label:"Grey Portland cement · CN 2523 29",sector:"Cement",routes:{"Any route":0.666},dflt:1.48,indirectPriced:true},
+  clk:{label:"Grey clinker · CN 2523 10",sector:"Cement",routes:{"Any route":0.666},dflt:1.44,indirectPriced:true},
+  amm:{label:"Anhydrous ammonia · CN 2814 10",sector:"Fertilisers",routes:{"Any route":1.522},dflt:3.28,indirectPriced:true},
+  urea:{label:"Urea · CN 3102 10",sector:"Fertilisers",routes:{"Any route":0.902},dflt:2.17,indirectPriced:true}
+};
+
+const FIRMS=[
+ {id:"tata",name:"Tata Steel",sector:"Steel",product:"hrc",route:"BF/BOF",see:2.45,ind:0.22,eu:600000,ebitda:34848,tier:"A",
+  p:{trans:70,disc:90,eff:60},
+  facts:[["Crude steel, India FY26","22.47 Mt"],["CO₂ intensity (worldsteel)","2.45 tCO₂/tcs"],["Scope 1 / Scope 2","64 / 5 MtCO₂e"],["Energy intensity","24.34 GJ/tcs"],["Exports from India","~2.0 Mt (9%)"],["Consolidated EBITDA FY26","₹34,848 cr"],["Net-zero target","2045"],["BRSR Core assurance","Reasonable, PwC"]],
+  why:["Reported intensity is 43% below India's EU default, worth about ₹20,600 crore over 2026–34.","Net zero by 2045 and a Ludhiana EAF designed for under 0.3 tCO₂e/t.","Not yet below the 2.2 t Green Steel threshold."],
+  src:[["ESG Factsheet FY26","https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/ESG%20Factsheet.pdf"],["FY26 results","https://www.tatasteel.com/media/25699/4qfy26-and-fy2026-results-presentation.pdf"],["BRSR FY26","https://www.tatasteel.com/media/25901/brsr.pdf"]]},
+ {id:"jsw",name:"JSW Steel",sector:"Steel",product:"hrc",route:"BF/BOF",see:2.36,ind:0.20,eu:890000,ebitda:29821,tier:"A",
+  p:{trans:75,disc:85,eff:55},
+  facts:[["Crude steel FY26","30.14 Mt"],["CO₂ intensity","2.36 tCO₂/tcs"],["FY30 target","1.95 tCO₂/tcs"],["Export share, Indian ops","10%"],["Consolidated EBITDA FY26","₹29,821 cr"],["Green finance","First steelmaker to issue an SLB"]],
+  why:["Largest EU volume in the sample, so the highest EBITDA-at-Risk: 6.6% in 2030.","A dated interim target of 1.95 t by FY30 lifts the transition pillar.","On defaults, 2030 risk would be 19.4% of EBITDA."],
+  src:[["Q4 FY26 presentation","https://nsearchives.nseindia.com/corporate/jessydenny_14052026164431_JSW_Steel_Q4_FY26_vF.pdf"]]},
+ {id:"hindalco",name:"Hindalco",sector:"Aluminium",product:"alu",route:"Primary",see:1.87,ind:17.7,eu:50000,ebitda:38097,tier:"B",
+  p:{trans:65,disc:70,eff:45},
+  facts:[["Aluminium upstream shipments FY26","1,350 kt"],["Total intensity incl. captive power","19.6 tCO₂e/t"],["Direct intensity used","1.87 (EU default, proxy)"],["Consolidated EBITDA FY26","₹38,097 cr"],["Net-zero target","2050"],["RE target","30% by 2030"]],
+  why:["Captive coal power counts as indirect, which CBAM ignores for aluminium today.","If the EU adds indirect emissions, 2030 risk rises from 0.2% to 3.3% of EBITDA.","Emissions pillar near zero: 19.6 t/t is above the global average."],
+  src:[["FY26 results","https://www.hindalco.com/media/press-releases/hindalco-results-q4-fy26"],["AlCircle, Feb 2024","https://www.alcircle.com/news/hindalco-s-net-zero-goals-redefined-on-track-to-meet-clean-energy-targets-before-estimated-time-107956"]]},
+ {id:"nalco",name:"NALCO",sector:"Aluminium",product:"alu",route:"Primary",see:1.87,ind:17.6,eu:15000,ebitda:8613,tier:"C",
+  p:{trans:25,disc:40,eff:30},
+  facts:[["Aluminium sales FY26","474 kt"],["Alumina production","2.30 Mt"],["Main export","Alumina (CN 2818), which CBAM doesn't cover"],["Estimated EU metal volume","15,000 t/yr"],["Total intensity (estimate)","~19.5 tCO₂e/t"],["EBITDA FY26","₹8,613 cr"],["Net-zero target","Not found"]],
+  why:["About a third of NALCO's revenue is exports, but most of that is alumina, which is outside CBAM. Only aluminium metal sent to the EU counts.","If the EU adds indirect emissions, 2030 risk rises from 0.3% to 4.4% of EBITDA.","No public decarbonisation target found; intensity and EU volume are estimates (tier C)."],
+  src:[["FY26 results","https://www.multibagg.ai/market-pulse/articles/nalco-fy26-record-results-dividend-cmthg2m2j00182mmtjt8um492"]]},
+ {id:"ultratech",name:"UltraTech",sector:"Cement",product:"cem",route:"Any route",see:0.578,ind:0.04,eu:0,ebitda:17598,tier:"A",
+  p:{trans:90,disc:90,eff:80},
+  facts:[["Grey cement volume FY26","145.0 Mt"],["Scope 1 intensity","578 kg/t cementitious"],["2030 target","557 kg/t"],["Green power, Q4 FY26","36.9%"],["PBIDT FY26","₹17,598 cr"],["Green finance","SLB and SLL outstanding"]],
+  why:["Highest Sustainability Index Score in the sample.","Exports to the EU are negligible, so EBITDA-at-Risk is zero.","Internal carbon price of about US$30/t (S9 slides)."],
+  src:[["SLB/SLL FY26 report","https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/sustainability-reports/ultratech-slb-sll-fy26-performance-report.pdf"],["Q4 FY26 results","https://www.ultratechcement.com/corporate/media/press-releases/financial-results-q4fy26"]]},
+ {id:"ambuja",name:"Ambuja",sector:"Cement",product:"cem",route:"Any route",see:0.537,ind:0.02,eu:0,ebitda:6539,tier:"B",
+  p:{trans:88,disc:70,eff:75},
+  facts:[["Volume FY26","73.7 Mt"],["EBITDA FY26","₹6,539 cr"],["Scope 1 intensity FY25","537 kg CO₂/t cementitious"],["2030 target","440 kg/t"],["Green power","28% (target 60%)"],["Net zero","SBTi-validated (2025)"]],
+  why:["Lowest cement intensity in the sample at 537 kg/t, already below the EU benchmark of 666.","SBTi-validated net-zero target; internal carbon price of about US$30/t (S9 slides).","No EU exports, so no CBAM charge."],
+  src:[["Adani ESG goals FY25","https://connect.adani.com/annual_report/2025/ambuja/esg-goals-and-targets.html"],["FY26 results","https://www.sahi.com/blogs/ambuja-cements-fy-26-results-record-73-7-mn-t-volume-revenue-40-656-cr-ebitda-up-31"],["SBTi validation","https://adani.com/newsroom/media-releases/ambuja-cements-and-acc-become-indias-leading-cement-companies"]]},
+ {id:"chambal",name:"Chambal Fertilisers",sector:"Fertilisers",product:"urea",route:"Any route",see:null,ind:0.06,eu:0,ebitda:2679,tier:"C",
+  p:{trans:30,disc:50,eff:70},
+  facts:[["Revenue FY26","₹20,794 cr"],["EBITDA FY26","₹2,679 cr"],["Urea capacity","~3.4 Mt/yr"],["Scope 1 in urea","−7.7% over five years"]],
+  why:["Energy-efficient Gadepan urea plants lift the efficiency pillar.","No public target or per-tonne intensity found.","No EU urea exports, so no charge today."],
+  src:[["FY26 factsheet","https://www.valoremadvisors.com/assets/admin/fact_file/1779165707_Chambal_-_FY26_Factsheet_final.pdf"]]},
+ {id:"coromandel",name:"Coromandel",sector:"Fertilisers",product:"urea",route:"Any route",see:null,ind:0.06,eu:0,ebitda:3232,tier:"C",
+  p:{trans:55,disc:50,eff:55},
+  facts:[["Total income FY26","₹31,827 cr"],["EBITDA FY26","₹3,232 cr"],["Phosphatic sales","4.3 Mt"],["CBAM product","DAP/NPK, CN 3105 (in scope)"],["Green ammonia offtake (SECI)","135,000 t/yr: 85,000 t Jakson Green + 50,000 t ACME at ₹51.89/kg"]],
+  why:["Coromandel is the offtaker for at least 135,000 t a year of SECI green ammonia from 2029, cutting the precursor emissions in its DAP and NPK.","DAP and NPK fall under CN 3105, which CBAM covers; ammonia bought in counts as a precursor.","New sulphuric and phosphoric acid plants at Kakinada increase backward integration."],
+  src:[["Renewable Watch: Jakson Green SECI deal","https://renewablewatch.in/2026/04/07/jakson-green-signs-465-million-green-ammonia-purchase-agreement-with-seci/"],["SolarQuarter: ACME wins 7th SECI auction","https://solarquarter.com/2025/08/19/secis-7th-green-ammonia-auction-yields-price-of-₹51-89-kg-acme-cleantech-wins-bid-for-coromandel-international/"],["FY26 results","https://www.coromandel.biz/press-release/coromandel-international-limited-posts-fy26-results-sustains-growth-momentum/"]]}
+];
+
+/* ---------------- MODEL ---------------- */
+function markup(sector,y){ if(sector==="Fertilisers") return .01; return y===2026?.10:y===2027?.20:.30; }
+function cbam(o,y){
+  // o: {sector,bm,dflt,see,ind,stress,useDefault,vol,price,rule,india,pass}
+  const seeUsed = o.useDefault ? o.dflt*(1+markup(o.sector,y)) : (o.see + (o.stress? o.ind:0));
+  const net = Math.max(0, seeUsed - o.bm*FA[o.rule][y]);
+  const cert = Math.max(0, PRICE[o.price][y] - (o.india||0));
+  const perT = net*cert;
+  const eur = o.vol*perT*(o.pass==null?1:o.pass);
+  return {seeUsed, net, perT, eur, cr: eur*EURINR/1e7};
+}
+function emisScore(sector,intensity){ if(intensity==null) return 50; const [lo,hi]=BAND[sector]; return clamp(100*(hi-intensity)/(hi-lo),0,100); }
+function firmIntensityForScore(f){ if(f.sector==="Aluminium") return f.see+f.ind; return f.see; }
+function score(f){ const e=emisScore(f.sector, f.see==null?null:firmIntensityForScore(f)); return {emis:e, total: W.emis*e+W.trans*f.p.trans+W.disc*f.p.disc+W.eff*f.p.eff}; }
+function firmRun(f,st,y){
+  const P=PRODUCTS[f.product];
+  if(!f.eu) return {cr:0,pct:0,perT:0};
+  const r=cbam({sector:f.sector,bm:P.routes[f.route],dflt:P.dflt,see:f.see,ind:f.ind,stress:st.stress,useDefault:st.basis==="default",vol:f.eu,price:st.price,rule:st.rule,india:0,pass:1},y);
+  return {cr:r.cr,pct:r.cr/f.ebitda*100,perT:r.perT};
+}
+
+/* ---------------- UTILS ---------------- */
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+const inr0=new Intl.NumberFormat("en-IN",{maximumFractionDigits:0});
+const inr1=new Intl.NumberFormat("en-IN",{maximumFractionDigits:1,minimumFractionDigits:1});
+const eur0=new Intl.NumberFormat("en-IE",{maximumFractionDigits:0});
+const cr=v=>"₹"+inr0.format(Math.round(v))+" cr";
+const pct=v=>inr1.format(v)+"%";
+const eur1=new Intl.NumberFormat("en-IE",{maximumFractionDigits:1,minimumFractionDigits:1});
+const eurAx=new Intl.NumberFormat("en-IE",{maximumFractionDigits:1});
+let CUR=(()=>{ try{ return localStorage.getItem("cs-cur")==="eur"?"eur":"inr"; }catch(e){ return "inr"; } })();
+const toCur=v=>CUR==="eur"? v*10/EURINR : v;            // ₹ crore → € million
+const fmtCur=v=>CUR==="eur"? "€"+eur1.format(v)+" m" : cr(v); // v already in display currency
+const mcr=v=>fmtCur(toCur(v));                             // v in ₹ crore
+const curAxis=v=>CUR==="eur"? "€"+eurAx.format(v)+"m" : "₹"+inr0.format(v);
+const curUnit=()=>CUR==="eur"?"€ million":"₹ crore";
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function riskPill(p,eu){ if(!eu) return '<span class="pill none"><span class="dot"></span>No EU exposure</span>';
+  const [c,l]= p<2?["low","Low"]: p<5?["mod","Moderate"]: p<10?["high","High"]:["sev","Severe"];
+  return `<span class="pill ${c}"><span class="dot" aria-hidden="true"></span>${l}</span>`; }
+function tierBadge(t){ const lbl={A:"Tier A: company-reported and assured",B:"Tier B: partly reported",C:"Tier C: mostly estimated"}[t]; return `<span class="tier ${t}" title="${lbl}" aria-label="${lbl}">${t}</span>`; }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v);}catch(e){ return null; } }
+
+/* ---------------- CHARTS (hand-rolled SVG) ---------------- */
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function niceMax(v){ if(v<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; const m=n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10; return m*p; }
+function tipFor(container){ let t=container.querySelector(".tip"); if(!t){ t=document.createElement("div"); t.className="tip"; t.setAttribute("role","presentation"); container.appendChild(t);} return t; }
+function placeTip(container,tip,x,y){ const w=container.clientWidth; tip.style.left=clamp(x+14,0,w-170)+"px"; tip.style.top=Math.max(0,y-10)+"px"; tip.classList.add("on"); }
+
+function hbar(container,items,opts){
+  container.innerHTML=""; const W0=container.clientWidth||520; const rowH=34, labW=Math.min(150,W0*.34), padR=44;
+  const H=items.length*rowH+24; const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},container);
+  const max=opts.max||niceMax(Math.max(...items.map(d=>d.value))); const x=v=>labW+(W0-labW-padR)*v/max;
+  [0,25,50,75,100].filter(t=>t<=max).forEach(t=>{ el("line",{x1:x(t),x2:x(t),y1:0,y2:H-20,class:"gridline"},svg); const tx=el("text",{x:x(t),y:H-4,"text-anchor":"middle"},svg); tx.textContent=t; });
+  const tip=tipFor(container);
+  items.forEach((d,i)=>{ const y=i*rowH+6;
+    const lt=el("text",{x:labW-10,y:y+15,"text-anchor":"end",class:"lbl-strong"},svg); lt.textContent=d.label;
+    const w=Math.max(2,x(d.value)-labW);
+    el("path",{d:`M${labW} ${y+4}h${w-4}a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-${w-4}z`,fill:d.color},svg);
+    const vt=el("text",{x:labW+w+6,y:y+15,class:"lbl-strong"},svg); vt.textContent=Math.round(d.value);
+    const hit=el("rect",{x:0,y:y-2,width:W0,height:rowH,fill:"transparent",tabindex:"0","aria-label":`${d.label}: ${Math.round(d.value)}`},svg);
+    const show=ev=>{ tip.innerHTML=`<div><b>${esc(d.label)}</b></div>${d.tip}`; const r=container.getBoundingClientRect(); placeTip(container,tip,(ev.clientX?ev.clientX-r.left:x(d.value)),(ev.clientY?ev.clientY-r.top:y)); };
+    hit.addEventListener("mousemove",show); hit.addEventListener("focus",()=>show({})); hit.addEventListener("mouseleave",()=>tip.classList.remove("on")); hit.addEventListener("blur",()=>tip.classList.remove("on"));
+    if(d.href){ hit.style.cursor="pointer"; hit.addEventListener("click",()=>location.hash=d.href); hit.addEventListener("keydown",e=>{if(e.key==="Enter")location.hash=d.href;}); }
+  });
+}
+
+function lines(container,series,opts){
+  container.innerHTML=""; const W0=container.clientWidth||640; const H=opts.h||280; const m={t:14,r:opts.endLabels?96:16,b:28,l:56};
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},container);
+  const all=series.flatMap(s=>s.values); const max=niceMax(Math.max(1e-9,...all)*1.05);
+  const x=i=>m.l+(W0-m.l-m.r)*i/(YEARS.length-1), y=v=>H-m.b-(H-m.t-m.b)*v/max;
+  for(let k=0;k<=4;k++){ const v=max*k/4; el("line",{x1:m.l,x2:W0-m.r,y1:y(v),y2:y(v),class:"gridline"},svg); const t=el("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end"},svg); t.textContent=opts.fmtAxis(v); }
+  YEARS.forEach((yr,i)=>{ if(W0<480 && i%2) return; const t=el("text",{x:x(i),y:H-8,"text-anchor":"middle"},svg); t.textContent=yr; });
+  el("line",{x1:m.l,x2:W0-m.r,y1:y(0),y2:y(0),class:"axis"},svg);
+  // 2030 cliff marker
+  const ci=YEARS.indexOf(2030); el("line",{x1:x(ci),x2:x(ci),y1:m.t,y2:H-m.b,stroke:"var(--ochre)","stroke-dasharray":"3 4","stroke-width":1},svg);
+  const ct=el("text",{x:x(ci)+4,y:m.t+10},svg); ct.textContent="2030 cliff"; ct.setAttribute("style","fill:var(--ochre)");
+  series.forEach(s=>{ const d=s.values.map((v,i)=>(i?"L":"M")+x(i)+" "+y(v)).join(" ");
+    el("path",{d,fill:"none",stroke:s.color,"stroke-width":2,"stroke-linejoin":"round","stroke-dasharray":s.dash||""},svg);
+    const li=s.values.length-1; el("circle",{cx:x(li),cy:y(s.values[li]),r:4,fill:s.color,stroke:"var(--surface)","stroke-width":2},svg);
+  });
+  if(opts.endLabels){ // de-collide end labels
+    const lab=series.map(s=>({s,y:y(s.values[s.values.length-1])})).sort((a,b)=>a.y-b.y);
+    for(let i=1;i<lab.length;i++) if(lab[i].y-lab[i-1].y<14) lab[i].y=lab[i-1].y+14;
+    lab.forEach(o=>{ const t=el("text",{x:W0-m.r+8,y:o.y+4,class:"lbl-strong"},svg); t.textContent=o.s.name; });
+  }
+  const cross=el("line",{x1:0,x2:0,y1:m.t,y2:H-m.b,stroke:"var(--muted)","stroke-width":1,opacity:0},svg);
+  const tip=tipFor(container);
+  const ov=el("rect",{x:m.l,y:m.t,width:W0-m.l-m.r,height:H-m.t-m.b,fill:"transparent",tabindex:"0","aria-label":"Chart. Use left and right arrow keys to step through years."},svg);
+  let cur=-1;
+  function show(i,px,py){ cur=i; cross.setAttribute("x1",x(i)); cross.setAttribute("x2",x(i)); cross.setAttribute("opacity",.6);
+    const rows=series.map(s=>({s,v:s.values[i]})).sort((a,b)=>b.v-a.v).map(o=>`<div class="row"><span><span class="sw" style="background:${o.s.color}"></span>${esc(o.s.name)}</span><b>${opts.fmtTip(o.v,o.s,i)}</b></div>`).join("");
+    tip.innerHTML=`<div style="margin-bottom:4px"><b>${YEARS[i]}</b></div>${rows}`; placeTip(container,tip,px==null?x(i):px,py==null?m.t:py); }
+  ov.addEventListener("mousemove",e=>{ const r=svg.getBoundingClientRect(); const px=(e.clientX-r.left)*(W0/r.width); const i=clamp(Math.round((px-m.l)/((W0-m.l-m.r)/(YEARS.length-1))),0,YEARS.length-1); const cr2=container.getBoundingClientRect(); show(i,e.clientX-cr2.left,e.clientY-cr2.top); });
+  ov.addEventListener("mouseleave",()=>{ tip.classList.remove("on"); cross.setAttribute("opacity",0); });
+  ov.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ e.preventDefault(); const i=clamp((cur<0?0:cur)+(e.key==="ArrowRight"?1:-1),0,YEARS.length-1); show(i); } });
+  ov.addEventListener("focus",()=>show(cur<0?YEARS.indexOf(2030):cur)); ov.addEventListener("blur",()=>{tip.classList.remove("on");cross.setAttribute("opacity",0);});
+}
+
+function matrix(container,pts,Y){
+  container.innerHTML=""; const W0=container.clientWidth||900; const H=Math.min(400,Math.max(290,W0*.42)); const m={t:24,r:28,b:44,l:56};
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},container);
+  const ymax=niceMax(Math.max(5,...pts.map(p=>p.y))*1.15);
+  const x=v=>m.l+(W0-m.l-m.r)*v/100, y=v=>H-m.b-(H-m.t-m.b)*v/ymax;
+  el("rect",{x:m.l,y:m.t,width:x(50)-m.l,height:y(ymax/2)-m.t,fill:"var(--ochre-soft)",opacity:.7},svg);
+  [0,25,50,75,100].forEach(t=>{ el("line",{x1:x(t),x2:x(t),y1:m.t,y2:H-m.b,class:"gridline"},svg); const tx=el("text",{x:x(t),y:H-m.b+16,"text-anchor":"middle"},svg); tx.textContent=t; });
+  for(let k=0;k<=4;k++){ const v=ymax*k/4; el("line",{x1:m.l,x2:W0-m.r,y1:y(v),y2:y(v),class:"gridline"},svg); const t=el("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end"},svg); t.textContent=inr1.format(v)+"%"; }
+  const xl=el("text",{x:(m.l+W0-m.r)/2,y:H-4,"text-anchor":"middle"},svg); xl.textContent="Sustainability Index Score →";
+  const yl=el("text",{x:14,y:(m.t+H-m.b)/2,"text-anchor":"middle",transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg); yl.textContent=`EBITDA-at-Risk ${Y||2030} →`;
+  const ql=el("text",{x:m.l+8,y:m.t+16},svg); ql.textContent="Act first"; ql.setAttribute("style","fill:var(--ochre);font-weight:600");
+  const tip=tipFor(container);
+  const order=[...pts].sort((a,b)=>(b.r||8)-(a.r||8)); // big bubbles first, small on top
+  const boxes=pts.map(p=>{ const rr=p.r||8; return {x1:x(p.x)-rr,y1:y(p.y)-rr,x2:x(p.x)+rr,y2:y(p.y)+rr}; });
+  const hitBox=(b)=>boxes.some(o=>!(b.x2<o.x1||b.x1>o.x2||b.y2<o.y1||b.y1>o.y2)) || b.x1<m.l || b.x2>W0-4 || b.y2>H-m.b+2 || b.y1<2;
+  order.forEach(p=>{ el("circle",{cx:x(p.x),cy:y(p.y),r:p.r||8,fill:p.color,"fill-opacity":p.eu?.82:.55,stroke:"var(--surface)","stroke-width":2},svg); });
+  pts.forEach(p=>{ const cx=x(p.x), cy=y(p.y), rr=p.r||8, o=rr+4;
+    const tw=p.label.length*6.6+4;
+    const cands=[{x:cx+o,y:cy+4,a:"start",b:{x1:cx+o-1,y1:cy-8,x2:cx+o+tw,y2:cy+6}},
+                 {x:cx-o,y:cy+4,a:"end",b:{x1:cx-o-tw,y1:cy-8,x2:cx-o+1,y2:cy+6}},
+                 {x:cx,y:cy-rr-6,a:"middle",b:{x1:cx-tw/2,y1:cy-rr-18,x2:cx+tw/2,y2:cy-rr-4}},
+                 {x:cx,y:cy-rr-20,a:"middle",b:{x1:cx-tw/2,y1:cy-rr-32,x2:cx+tw/2,y2:cy-rr-18}},
+                 {x:cx,y:cy-rr-34,a:"middle",b:{x1:cx-tw/2,y1:cy-rr-46,x2:cx+tw/2,y2:cy-rr-32}}];
+    const c=cands.find(c=>!hitBox(c.b))||cands[2]; boxes.push(c.b);
+    if(c.y<cy-rr-12) el("line",{x1:cx,x2:cx,y1:cy-rr-1,y2:c.y+3,stroke:"var(--muted)","stroke-width":1},svg);
+    const t=el("text",{x:c.x,y:c.y,class:"lbl-strong","text-anchor":c.a},svg); t.textContent=p.label;
+    const hit=el("circle",{cx,cy,r:Math.max(16,rr+4),fill:"transparent",tabindex:"0","aria-label":`${p.label}: index score ${Math.round(p.x)}, EBITDA-at-Risk ${inr1.format(p.y)}%, EU volume ${inr0.format(p.eu||0)} tonnes`},svg);
+    const show=()=>{ tip.innerHTML=`<div><b>${esc(p.label)}</b></div><div class="row"><span>Index score</span><b>${Math.round(p.x)}</b></div><div class="row"><span>${Y||2030} at risk</span><b>${pct(p.y)}</b></div><div class="row"><span>EU volume</span><b>${p.eu?inr0.format(p.eu)+" t":"none"}</b></div>`; placeTip(container,tip,cx,cy); };
+    hit.addEventListener("mouseenter",show); hit.addEventListener("focus",show); hit.addEventListener("mouseleave",()=>tip.classList.remove("on")); hit.addEventListener("blur",()=>tip.classList.remove("on"));
+    hit.style.cursor="pointer"; hit.addEventListener("click",()=>location.hash="firm-"+p.id); hit.addEventListener("keydown",e=>{if(e.key==="Enter")location.hash="firm-"+p.id;});
+  });
+}
+
+function stacked(container,rows,keys,opts){
+  container.innerHTML=""; const W0=container.clientWidth||700; const H=300; const m={t:14,r:12,b:28,l:64};
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},container);
+  const max=niceMax(Math.max(...rows.map(r=>keys.reduce((a,k)=>a+r[k.k],0)))*1.05||1);
+  const bw=(W0-m.l-m.r)/rows.length, x=i=>m.l+bw*i+bw*.18, y=v=>H-m.b-(H-m.t-m.b)*v/max;
+  for(let k=0;k<=4;k++){ const v=max*k/4; el("line",{x1:m.l,x2:W0-m.r,y1:y(v),y2:y(v),class:"gridline"},svg); const t=el("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end"},svg); t.textContent="₹"+inr0.format(v); }
+  const tip=tipFor(container);
+  rows.forEach((r,i)=>{ let acc=0; const w=bw*.64;
+    keys.forEach((k,ki)=>{ const v=r[k.k]; if(v<=0) return; const y0=y(acc), y1=y(acc+v); const top=ki===keys.length-1 || keys.slice(ki+1).every(kk=>r[kk.k]<=0);
+      const h=Math.max(0,y0-y1-(acc>0?2:0));
+      if(top && h>4) el("path",{d:`M${x(i)} ${y0-(acc>0?2:0)}V${y1+4}a4 4 0 0 1 4 -4h${w-8}a4 4 0 0 1 4 4V${y0-(acc>0?2:0)}z`,fill:k.color},svg);
+      else el("rect",{x:x(i),y:y1,width:w,height:h,fill:k.color},svg);
+      acc+=v; });
+    const t=el("text",{x:x(i)+w/2,y:H-8,"text-anchor":"middle"},svg); if(!(W0<480 && i%2)) t.textContent=r.year;
+    const hit=el("rect",{x:m.l+bw*i,y:m.t,width:bw,height:H-m.t-m.b,fill:"transparent",tabindex:"0","aria-label":`${r.year}: `+keys.map(k=>`${k.name} ₹${inr0.format(r[k.k])} crore`).join(", ")},svg);
+    const show=()=>{ tip.innerHTML=`<div style="margin-bottom:4px"><b>${r.year}</b></div>`+keys.map(k=>`<div class="row"><span><span class="sw" style="background:${k.color}"></span>${k.name}</span><b>₹${inr0.format(r[k.k])} cr</b></div>`).join(""); placeTip(container,tip,x(i)+w,y(acc)); };
+    hit.addEventListener("mouseenter",show); hit.addEventListener("focus",show); hit.addEventListener("mouseleave",()=>tip.classList.remove("on")); hit.addEventListener("blur",()=>tip.classList.remove("on"));
+  });
+}
+
+function tableHTML(head,rows,numCols,wrapCols){ wrapCols=wrapCols||[]; const cl=i=>(numCols.includes(i)?"n ":"")+(wrapCols.includes(i)?"wrap":""); return `<table><thead><tr>${head.map((h,i)=>`<th class="${cl(i)}" scope="col">${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${cl(i)}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`; }
+
+/* ---------------- HOME ---------------- */
+function renderRuler(){ const r=$("#ruler"); r.innerHTML=YEARS.map(y=>{ const f=FA.law[y]*100; return `<div class="col${y===2030?" cliff":""}"><span class="pct num">${f}%</span><div class="bar exp" style="height:${(100-f)*1.3}px" title="Exposed ${100-f}%"></div><div class="bar" style="height:${f*1.3}px;border-radius:${f===100?"4px 4px 0 0":"0"}"></div><span class="yr">${y}</span></div>`; }).join(""); }
+
+/* ---------------- DASHBOARD ---------------- */
+const PERSONAS={all:"Everyone",bank:"Lender",importer:"EU importer",producer:"Producer",govt:"Government"};
+const LENS_SORT={all:{k:"score",dir:-1},bank:{k:"pct",dir:-1},importer:{k:"perT",dir:1},producer:{k:"score",dir:-1},govt:{k:"cr",dir:-1}};
+const dash={sectors:new Set(SECTORS),price:"base",basis:"verified",rule:"law",stress:false,year:2030,sort:{k:"score",dir:-1},persona:"all"};
+{ const p=store("cs-lens"); if(PERSONAS[p]){ dash.persona=p; dash.sort={...LENS_SORT[p]}; } }
+function dashFirms(){ return FIRMS.filter(f=>dash.sectors.has(f.sector)); }
+function perTonne(f,st,y){ const P=PRODUCTS[f.product];
+  return cbam({sector:f.sector,bm:P.routes[f.route],dflt:P.dflt,see:f.see||0,ind:f.ind,stress:st.stress,useDefault:st.basis==="default"||f.see==null,vol:1,price:st.price,rule:st.rule,india:0,pass:1},y).perT; }
+function bmDelta(f,st){ if(f.see==null) return null; const bm=PRODUCTS[f.product].routes[f.route]; const v=f.see+(st&&st.stress?f.ind:0); return {v,bm,d:(v/bm-1)*100}; }
+function keptAt(fs,st,pin){ return fs.filter(f=>f.eu).reduce((a,f)=>{ const P=PRODUCTS[f.product]; const o={sector:f.sector,bm:P.routes[f.route],dflt:P.dflt,see:f.see||0,ind:f.ind,stress:st.stress,useDefault:st.basis==="default"||f.see==null,vol:f.eu,price:st.price,rule:st.rule,pass:1};
+  return a+YEARS.reduce((s,y)=>s+cbam({...o,india:0},y).cr-cbam({...o,india:pin},y).cr,0); },0); }
+function lensView(fs,st){
+  const Y=st.year;
+  const run=fs.map(f=>({f,r:firmRun(f,st,Y),d:firmRun(f,{...st,basis:"default"},Y),s:score(f).total}));
+  const tot=run.reduce((a,o)=>a+o.r.cr,0);
+  const worst=[...run].sort((a,b)=>b.r.pct-a.r.pct)[0], worstDef=[...run].sort((a,b)=>b.d.pct-a.d.pct)[0];
+  const hasRisk=worst&&worst.r.pct>0;
+  const saving=fs.reduce((a,f)=>a+YEARS.reduce((s,y)=>s+firmRun(f,{...st,basis:"default"},y).cr-firmRun(f,{...st,basis:"verified"},y).cr,0),0);
+  const avg=fs.length?run.reduce((a,o)=>a+o.s,0)/fs.length:0;
+  const K={
+    charge:[`CBAM charge in ${Y}`,mcr(tot),`${fs.length} firms · ${st.basis==="default"?"EU defaults":"verified data"}`],
+    worst:[`Highest EBITDA-at-Risk, ${Y}`,hasRisk?pct(worst.r.pct):"–",hasRisk?worst.f.name:"no EU exposure in view"],
+    saving:["Value of verified data, 2026–34",mcr(saving),"default charge minus verified charge"],
+    avg:["Average index score",Math.round(avg)+"/100","simple average of shown firms"],
+    fa:[`Free allocation left, ${Y}`,+(FA[st.rule][Y]*100).toFixed(1)+"%","of the EU benchmark, "+(st.rule==="law"?"current law":"proposal")]
+  };
+  const p=st.persona;
+  if(p==="bank"){
+    const over=fs.filter(f=>firmRun(f,st,2034).pct>5).length;
+    const exposed=run.filter(o=>o.r.pct>=1).map(o=>o.f.name);
+    return {kpis:[K.worst,[`If its data is rejected, ${Y}`,worstDef&&worstDef.d.pct>0?pct(worstDef.d.pct):"–",worstDef&&worstDef.d.pct>0?worstDef.f.name+" on EU default values":"no EU exposure in view"],["Above 5% of EBITDA by 2034",`${over} of ${fs.length}`,"firms in view"],K.avg],
+      note: hasRisk? `<strong>For a lender.</strong> CBAM risk in this book sits with ${exposed.length?exposed.join(" and "):worst.f.name}. ${esc(worst.f.name)}'s ${Y} charge is ${pct(worst.r.pct)} of EBITDA on its own data and ${pct(firmRun(worst.f,{...st,basis:"default"},Y).pct)} if the EU rejects that data. Ask borrowers for verified installation data and a dated transition plan, and read a tier C score as an estimate, not a rating.`
+        : `<strong>For a lender.</strong> None of the firms in view sells enough to the EU to carry a CBAM charge. Their scores still show how ready they are for India's own carbon market.`};
+  }
+  if(p==="importer"){
+    const ex=fs.filter(f=>f.eu); const sec=(ex.find(f=>f.sector==="Steel")||ex[0]||fs[0]||{}).sector;
+    const pool=(ex.length?ex:fs).filter(f=>f.sector===sec);
+    const pt=pool.map(f=>({f,v:perTonne(f,{...st,basis:"verified"},Y),dv:perTonne(f,{...st,basis:"default"},Y)})).sort((a,b)=>a.v-b.v);
+    const best=pt[0];
+    return {kpis:[[`Cheapest ${sec?sec.toLowerCase():""} tonne, ${Y}`,best?"€"+eur0.format(best.v):"–",best?best.f.name+" · verified data":""],
+      ["Same tonne on India's default",best?"€"+eur0.format(best.dv):"–","what an unverified supplier costs"],
+      ["Saving per tonne from verified data",best?"€"+eur0.format(Math.max(0,best.dv-best.v)):"–","default minus verified"],K.fa],
+      note: best? `<strong>For an EU importer.</strong> Among ${sec.toLowerCase()} suppliers in view, each tonne of ${PRODUCTS[best.f.product].label.split(" · ")[0].toLowerCase()} from ${esc(best.f.name)} carries about €${eur0.format(best.v)} of CBAM certificates in ${Y} on its verified data. If the supplier can't provide verified installation data, the same tonne is charged at India's default value: about €${eur0.format(best.dv)}. Ask suppliers for verified data before your first annual declaration in 2027, and write it into contracts.` : ""};
+  }
+  if(p==="producer"){
+    const ds=fs.map(f=>({f,b:bmDelta(f,st)})).filter(o=>o.b).sort((a,b)=>a.b.d-b.b.d);
+    const c=ds[0];
+    return {kpis:[K.saving,["Closest to its EU benchmark",c?(c.b.d>0?"+":"−")+Math.abs(Math.round(c.b.d))+"%":"–",c?c.f.name:"no disclosed intensity in view"],K.fa,K.avg],
+      note:`<strong>For a producer.</strong> Verified installation data is worth ${mcr(saving)} to these firms over 2026–34, because without it the EU charges India's default value plus a mark-up. After that, every 0.1 tCO₂e/t cut saves about €${eur0.format(0.1*PRICE[st.price][Y])} per exported tonne in ${Y}. Test a cut in <a href="#calculator">Rate a company</a>.`};
+  }
+  if(p==="govt"){
+    const sum=fs.reduce((a,f)=>a+YEARS.reduce((s,y)=>s+firmRun(f,st,y).cr,0),0);
+    const keep=keptAt(fs,st,30); const n=fs.filter(f=>f.eu).length;
+    return {kpis:[[`Paid to the EU, ${Y}`,mcr(tot),`${n} firms with EU sales`],["Paid to the EU, 2026–34",mcr(sum),"CBAM certificates"],["Kept in India at €30/t",mcr(keep),"2026–34, if a domestic price is paid"],K.avg],
+      note:`<strong>For government.</strong> These ${n} firms pay ${mcr(sum)} to the EU in CBAM certificates over 2026–34. A carbon price actually paid in India can be deducted from CBAM (Article 9 of the CBAM Regulation), so a €30/t domestic price would keep about ${mcr(keep)} of that at home. Compare cost-sharing options in the <a href="#policy">Policy simulator</a>.`};
+  }
+  return {kpis:[K.charge,K.worst,K.saving,K.avg],note:""};
+}
+function renderRefChips(){ const st=dash,Y=st.year;
+  $("#refChips").innerHTML=`<span class="lbl">In use</span>`+[
+    [`EU ETS ${Y}`,`€${PRICE[st.price][Y]}/t`,{low:"low path",base:"base path",high:"high path"}[st.price]],
+    [`Free allocation ${Y}`,`${+(FA[st.rule][Y]*100).toFixed(1)}%`,st.rule==="law"?"current law":"proposal"],
+    ["Data",st.basis==="default"?`EU default +${Math.round(markup("Steel",Y)*100)}%`:"verified",""],
+    ["Scope",st.stress?"direct + indirect":"direct",st.stress?"stress test":""],
+    ["€1","₹"+EURINR,""]
+  ].map(([a,b,c])=>`<span class="refchip">${a} <b>${b}</b>${c?` · ${c}`:""}</span>`).join(""); }
+function renderDash(){
+  const fs=dashFirms(), st=dash, Y=st.year;
+  const L=lensView(fs,st);
+  $("#kpis").innerHTML=L.kpis.map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${esc(k[2])}</span></div>`).join("");
+  const ln=$("#lensNote"); if(L.note){ ln.hidden=false; ln.innerHTML=L.note; } else { ln.hidden=true; ln.innerHTML=""; }
+  renderRefChips();
+  // score bars
+  const sItems=fs.map(f=>({f,s:score(f)})).sort((a,b)=>b.s.total-a.s.total).map(o=>({label:o.f.name,value:o.s.total,color:SCOL[o.f.sector],href:"firm-"+o.f.id,
+    tip:`<div class="row"><span>Emissions</span><b>${Math.round(o.s.emis)}</b></div><div class="row"><span>Transition</span><b>${o.f.p.trans}</b></div><div class="row"><span>Disclosure</span><b>${o.f.p.disc}</b></div><div class="row"><span>Efficiency</span><b>${o.f.p.eff}</b></div><div class="row"><span>Tier</span><b>${o.f.tier}</b></div>`}));
+  hbar($("#c-score"),sItems,{max:100});
+  $("#c-score").setAttribute("aria-label","Sustainability Index Score by firm, highest first: "+sItems.map(i=>`${i.label} ${Math.round(i.value)}`).join(", "));
+  $("#t-score").innerHTML=tableHTML(["Firm","Score","Tier"],sItems.map(i=>[esc(i.label),Math.round(i.value),FIRMS.find(f=>f.name===i.label).tier]),[1]);
+  // risk lines
+  const exp=fs.filter(f=>f.eu>0);
+  const ser=exp.map(f=>({name:f.name,color:SCOL[f.sector],dash:f.sector==="Aluminium"&&f.id==="nalco"?"5 4":(f.id==="tata"?"5 4":""),values:YEARS.map(y=>firmRun(f,st,y).pct),f}));
+  if(ser.length){ lines($("#c-risk"),ser,{endLabels:true,fmtAxis:v=>inr1.format(v)+"%",fmtTip:(v,s,i)=>pct(v)+" · "+mcr(firmRun(s.f,st,YEARS[i]).cr)}); }
+  else { $("#c-risk").innerHTML='<p class="note">None of the selected firms export to the EU.</p>'; }
+  $("#c-risk").setAttribute("aria-label","EBITDA-at-Risk by year. "+ser.map(s=>`${s.name}: ${pct(s.values[4])} in 2030, ${pct(s.values[8])} in 2034`).join("; "));
+  $("#t-risk").innerHTML=tableHTML(["Firm",...YEARS],ser.map(s=>[esc(s.name),...s.values.map(v=>pct(v))]),YEARS.map((_,i)=>i+1));
+  // matrix: bubble size = EU volume
+  $("#h-matrix").textContent=`Risk versus Sustainability Index, ${Y}`;
+  const maxEu=Math.max(1,...fs.map(f=>f.eu));
+  matrix($("#c-matrix"),fs.map(f=>({id:f.id,label:f.name,x:score(f).total,y:firmRun(f,st,Y).pct,color:SCOL[f.sector],eu:f.eu,r:f.eu?7+13*Math.sqrt(f.eu/maxEu):5})),Y);
+  $("#c-matrix").setAttribute("aria-label",`Scatter of Sustainability Index Score against ${Y} EBITDA-at-Risk; bubble size is estimated EU volume. `+fs.map(f=>`${f.name}: readiness ${Math.round(score(f).total)}, risk ${pct(firmRun(f,st,Y).pct)}, EU volume ${inr0.format(f.eu)} t`).join("; "));
+  renderFirmTable(); renderStrips(); renderUnlisted();
+}
+function pillarBar(f){ const s=score(f);
+  const parts=[["Emissions",W.emis*s.emis,"pc1"],["Transition",W.trans*f.p.trans,"pc2"],["Disclosure",W.disc*f.p.disc,"pc3"],["Efficiency",W.eff*f.p.eff,"pc4"]];
+  return `<div class="pbar" title="${parts.map(p=>p[0]+" "+p[1].toFixed(1)).join(" · ")}"><span class="trk" aria-hidden="true">${parts.map(p=>`<span class="${p[2]}" style="width:${p[1].toFixed(2)}%"></span>`).join("")}</span><span class="num">${Math.round(s.total)}</span><span class="sr-only">: ${parts.map(p=>`${p[0]} ${p[1].toFixed(1)} points`).join(", ")}</span></div>`; }
+function spark(vals,max){ const w=84,h=24; const m=Math.max(max||0,...vals,1e-4);
+  const P=vals.map((v,i)=>[2+i/(vals.length-1)*(w-6),h-3-(h-6)*v/m]); const last=P[P.length-1];
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${P.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.4" fill="var(--accent)"/></svg>`; }
+let tableOrder=[];
+function renderFirmTable(){
+  const st=dash, y=st.year; const cols=[
+    {k:"name",h:"Firm"},{k:"sector",h:"Sector"},{k:"score",h:"Index score"},{k:"tier",h:"Tier"},{k:"delta",h:"vs EU benchmark",n:1},{k:"cr",h:`CBAM ${y}`,n:1},{k:"pct",h:`% EBITDA ${y}`,n:1},{k:"perT",h:`€/t ${y}`,n:1},{k:"trend",h:"2026 → 2034"},{k:null,h:"Source"}];
+  let rows=dashFirms().map(f=>{ const r=firmRun(f,st,y); const peers=FIRMS.filter(p=>p.sector===f.sector).sort((a,b)=>score(b).total-score(a).total); const bd=bmDelta(f,st);
+    const trend=YEARS.map(yy=>firmRun(f,st,yy).pct);
+    return {f,bd,trend,srank:peers.indexOf(f)+1,npeers:peers.length,name:f.name,sector:f.sector,score:score(f).total,tier:f.tier,cr:r.cr,pct:r.pct,perT:perTonne(f,st,y),delta:bd?bd.d:1e9,trendK:trend[8]}; });
+  const {k,dir}=st.sort; const kk=k==="trend"?"trendK":k; rows.sort((a,b)=> (typeof a[kk]==="string"? a[kk].localeCompare(b[kk]) : a[kk]-b[kk])*dir);
+  tableOrder=rows.map(r=>r.f.id);
+  const tmax=Math.max(...rows.map(r=>Math.max(...r.trend)),1);
+  $("#firmTable").innerHTML=`<caption class="sr-only">Sustainability Index Score with pillar split, tier, intensity against the EU benchmark and CBAM cost by firm for ${y}. Column headers sort the table.</caption><thead><tr>${cols.map(c=>`<th scope="col" class="${c.n?"n":""}" ${c.k?`aria-sort="${st.sort.k===c.k?(st.sort.dir>0?"ascending":"descending"):"none"}"`:""}>${c.k?`<button class="sort" data-k="${c.k}" type="button">${c.h}</button>`:c.h}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(r=>`<tr><td><a class="firm-link" href="#firm-${r.f.id}">${esc(r.name)}</a></td>
+      <td><span class="sector-dot" style="background:${SCOL[r.sector]}" aria-hidden="true"></span>${r.sector}<br><span class="note num">#${r.srank} of ${r.npeers}</span></td>
+      <td>${pillarBar(r.f)}</td><td>${tierBadge(r.tier)}</td>
+      <td class="n">${r.bd?`<span class="num">${r.bd.v.toFixed(2)}</span> <span class="delta ${r.bd.d>0?"over":"under"}" title="EU benchmark ${r.bd.bm} tCO₂e/t (${r.f.route})">${r.bd.d>0?"+":"−"}${Math.abs(Math.round(r.bd.d))}%</span>`:`<span class="note">Not disclosed</span>`}</td>
+      <td class="n">${r.f.eu?mcr(r.cr):"–"}</td>
+      <td class="n"><div class="pctcell">${r.f.eu?`<span class="num">${pct(r.pct)}</span>`:""}${riskPill(r.pct,r.f.eu)}</div></td>
+      <td class="n num">€${eur0.format(r.perT)}</td>
+      <td>${r.f.eu?`<div class="trendcell">${spark(r.trend,tmax)}<span class="num note">${pct(r.trend[0])} → ${pct(r.trend[8])}</span></div>`:`<span class="note">No EU sales</span>`}</td>
+      <td><a class="pill src" href="${r.f.src[0][1]}" target="_blank" rel="noopener" title="${esc(r.f.src[0][0])}" aria-label="Source for ${esc(r.name)}: ${esc(r.f.src[0][0])} (opens in a new tab)">${/BRSR/i.test(r.f.src[0][0])?"BRSR":/ESG|SLB|sustainab/i.test(r.f.src[0][0])?"ESG report":"Filing"} ↗</a></td></tr>`).join("")}</tbody>`;
+  $$("#firmTable button.sort").forEach(b=>b.addEventListener("click",()=>{ const k=b.dataset.k; dash.sort = dash.sort.k===k? {k,dir:-dash.sort.dir}:{k,dir:(k==="name"||k==="sector"||k==="tier"||k==="delta"||k==="perT")?1:-1}; renderFirmTable(); const nb=$(`#firmTable button.sort[data-k="${k}"]`); if(nb) nb.focus(); }));
+}
+function setCur(c){ CUR=c; store("cs-cur",c); $$("#curSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===c)); }
+function initDash(){
+  $("#sectorChips").innerHTML=SECTORS.map(s=>`<button type="button" class="chip-btn" aria-pressed="true" data-s="${s}"><i style="background:${SCOL[s]}" aria-hidden="true"></i>${s}</button>`).join("");
+  $$("#sectorChips .chip-btn").forEach(b=>b.addEventListener("click",()=>{ const s=b.dataset.s; if(dash.sectors.has(s)&&dash.sectors.size>1){dash.sectors.delete(s);b.setAttribute("aria-pressed","false");} else {dash.sectors.add(s);b.setAttribute("aria-pressed","true");} renderDash(); }));
+  $("#d-year").innerHTML=YEARS.map(y=>`<option${y===dash.year?" selected":""}>${y}</option>`).join("");
+  $("#d-year").addEventListener("change",e=>{ dash.year=+e.target.value; rerenderVisible(); });
+  ["price","basis","rule"].forEach(k=>$("#d-"+k).addEventListener("change",e=>{dash[k]=e.target.value;rerenderVisible();}));
+  $("#d-stress").addEventListener("change",e=>{dash.stress=e.target.checked;rerenderVisible();});
+  setCur(CUR);
+  $$("#curSeg button").forEach(b=>b.addEventListener("click",()=>{ setCur(b.dataset.c); rerenderVisible(); }));
+  $("#lensSeg").innerHTML=Object.entries(PERSONAS).map(([k,l])=>`<button type="button" data-p="${k}" aria-pressed="${k===dash.persona}">${l}</button>`).join("");
+  $$("#lensSeg button").forEach(b=>b.addEventListener("click",()=>{ const p=b.dataset.p; dash.persona=p; dash.sort={...LENS_SORT[p]}; store("cs-lens",p); $$("#lensSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderDash(); }));
+}
+
+/* ---------------- FIRM DEEP-DIVE (slide-over drawer) ---------------- */
+const GAUGE={Steel:{max:5,dflt:4.28,stars:[[0,1.6,"5★"],[1.6,2.0,"4★"],[2.0,2.2,"3★"]]},Aluminium:{max:2.5,dflt:1.87},Cement:{max:1.6,dflt:1.48},Fertilisers:{max:2.5,dflt:2.17}};
+function gauge(c,f,st){
+  c.innerHTML=""; const W0=c.clientWidth||640, g=GAUGE[f.sector], P=PRODUCTS[f.product], bm=P.routes[f.route], Y=st.year, free=bm*FA[st.rule][Y];
+  const disclosed=f.see!=null, v=disclosed? f.see+(st.stress?f.ind:0) : P.dflt, off=v>g.max;
+  const H=g.stars?156:124, y0=76, m={l:14,r:14}; const x=t=>m.l+(W0-m.l-m.r)*Math.min(t,g.max)/g.max;
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},c);
+  const lab=(xx,yy,txt,cls,col)=>{ const tw=txt.length*6.5; const t=el("text",{x:clamp(xx,m.l+tw/2,W0-m.r-tw/2),y:yy,"text-anchor":"middle",class:cls||""},svg); t.textContent=txt; if(col) t.setAttribute("style",`fill:${col}`); return t; };
+  el("rect",{x:m.l,y:y0-6,width:W0-m.l-m.r,height:12,rx:6,fill:"var(--surface-2)"},svg);
+  el("rect",{x:m.l,y:y0-6,width:Math.max(0,x(free)-m.l),height:12,rx:6,fill:"var(--accent)",opacity:.28},svg);
+  if(g.stars){ g.stars.forEach(([a,b,l],i)=>{ el("rect",{x:x(a),y:y0+16,width:x(b)-x(a)-1,height:8,fill:"var(--good)",opacity:[.55,.38,.22][i]},svg); if(x(b)-x(a)>=24){ const t=el("text",{x:(x(a)+x(b))/2,y:y0+40,"text-anchor":"middle"},svg); t.textContent=l; } });
+    const t=el("text",{x:x(2.2)+6,y:y0+40},svg); t.textContent=W0<520?"← green steel":"← Green steel under 2.2 t (India taxonomy)"; }
+  [[bm,`EU benchmark ${bm}`,"var(--accent)",y0-22],[g.dflt,`India default ${g.dflt}`,"var(--ochre)",y0-38]].forEach(([val,l,col,ly])=>{ el("line",{x1:x(val),x2:x(val),y1:ly+4,y2:y0+10,stroke:col,"stroke-width":2},svg); lab(x(val),ly,l,"lbl-strong",col); });
+  const cx=x(v); el("circle",{cx,cy:y0,r:9,fill:disclosed?SCOL[f.sector]:"var(--surface)",stroke:disclosed?"var(--surface)":"var(--ochre)","stroke-width":disclosed?2.5:2,"stroke-dasharray":disclosed?"":"3 2"},svg);
+  if(off){ const t=el("text",{x:cx-14,y:y0+4,"text-anchor":"end",class:"lbl-strong"},svg); t.textContent="→"; }
+  lab(cx,y0-56,disclosed?`${f.name} ${v.toFixed(2)}${off?" (off scale)":""}`:`${f.name}: not disclosed`,"lbl-strong");
+  el("line",{x1:cx,x2:cx,y1:y0-50,y2:y0-10,stroke:"var(--muted)","stroke-width":1,"stroke-dasharray":"2 2"},svg);
+  const step=g.max>3?1:.5, ty=H-6; for(let t=0;t<=g.max+1e-9;t+=step){ const tt=el("text",{x:x(t),y:ty,"text-anchor":t===0?"start":(t>=g.max?"end":"middle")},svg); tt.textContent=+t.toFixed(1); }
+  let note;
+  if(disclosed){ const need=Math.max(0,v-free), d=(v/bm-1)*100;
+    note=`${esc(f.name)}: ${v.toFixed(2)} tCO₂e/t, ${Math.abs(Math.round(d))}% ${d>0?"above":"below"} the EU benchmark of ${bm} t (${f.route}). In ${Y}, free allocation covers ${free.toFixed(2)} t (shaded), so ${need.toFixed(2)} t per tonne needs certificates.`;
+    if(f.sector==="Steel"){ const rt=v<1.6?"would rate 5-star green steel":v<2.0?"would rate 4-star green steel":v<2.2?"would rate 3-star green steel":"does not yet qualify as green steel"; note+=` On India's Green Steel Taxonomy (under 2.2 t is green) it ${rt}. The taxonomy counts per tonne of finished steel and this figure is per tonne of crude steel, so treat that as indicative.`; }
+    if(f.sector==="Aluminium"&&!st.stress) note+=` Including captive coal power the total is ${(f.see+f.ind).toFixed(1)} t; CBAM leaves that out for aluminium today. Tick the stress test to add it.`;
+  } else note=`${esc(f.name)} doesn't disclose emissions per tonne, so an EU importer would be charged India's default of ${P.dflt} t (plus a ${Math.round(markup(f.sector,Y)*100)}% mark-up in ${Y}) until it does.`;
+  $("#gaugeNote").innerHTML=note;
+  c.setAttribute("aria-label",`Benchmark ruler for ${f.name}. ${disclosed?`Intensity ${v.toFixed(2)}`:"Intensity not disclosed"}; EU benchmark ${bm}; India default ${g.dflt}; free allocation in ${Y} ${free.toFixed(2)}.`);
+}
+let drawerId=null, drawerTrigger=null;
+function renderFirm(id){
+  const f=FIRMS.find(x=>x.id===id); if(!f) return; drawerId=id;
+  const st=dash, Y=st.year, s=score(f), rY=firmRun(f,st,Y);
+  const sc=`${{low:"Low",base:"Base",high:"High"}[st.price]} carbon price · ${st.basis==="default"?"EU default values":"verified data"} · ${st.rule==="law"?"current law":"proposal rule"}${st.stress?" · indirect added":""}`;
+  const i=tableOrder.indexOf(id); $("#drawerPos").textContent=i>=0?`${i+1} of ${tableOrder.length}`:"";
+  $("#drawerPrev").disabled=!(i>0); $("#drawerNext").disabled=!(i>=0&&i<tableOrder.length-1);
+  $("#firmBody").innerHTML=`<div class="stack" style="gap:8px"><span class="eyebrow"><span class="sector-dot" style="background:${SCOL[f.sector]}" aria-hidden="true"></span>${f.sector} · ${PRODUCTS[f.product].label}</span><h1 id="h-firm" tabindex="-1" style="font-size:var(--t-2xl)">${esc(f.name)}</h1><p class="note">Scenario: ${sc} · ${Y}. Change it in the scenario bar on the dashboard.</p></div>
+  <div class="dstats"><div><span class="note">Index score</span><span class="big num">${Math.round(s.total)}</span></div><div><span class="note">Confidence</span>${tierBadge(f.tier)}</div>
+    <div><span class="note">${Y} at risk</span><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${f.eu?`<span class="mid num">${pct(rY.pct)}</span>`:""}${riskPill(rY.pct,f.eu)}</span></div>
+    <div><span class="note">CBAM charge ${Y}</span><span class="mid num">${f.eu?mcr(rY.cr):"–"}</span></div></div>
+  <div class="chart-card"><header><div><h3>Where it sits against the EU benchmark</h3><p>tCO₂e per tonne of product, direct emissions${st.stress?" plus indirect":""}</p></div></header><div class="chart" id="c-gauge" role="img"></div><p class="note" id="gaugeNote"></p></div>
+  <div class="chart-card"><header><div><h3>CBAM charge, three ways</h3><p>${curUnit()} per year</p></div></header><div class="chart" id="c-firm" role="img"></div>${f.eu?"":'<p class="note">This firm sells almost nothing to the EU, so the charge is zero in every case.</p>'}</div>
+  <div class="chart-card"><header><div><h3>Score breakdown</h3><p>Weighted pillars, 0–100</p></div></header><div class="pillars">${[["Emissions",s.emis,35],["Transition plan",f.p.trans,25],["Disclosure",f.p.disc,20],["Efficiency",f.p.eff,20]].map(p=>`<div class="pillar"><span>${p[0]} <span class="w">${p[2]}%</span></span><div class="scorebar"><span class="trk"><span class="fill" style="width:${p[1]}%;display:block"></span></span></div><span class="num">${Math.round(p[1])}</span></div>`).join("")}</div>
+    <h4 style="margin-top:var(--sp-4)">Why this score</h4><ul style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:var(--t-sm)">${f.why.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>
+  <div class="stack"><h3>Key figures</h3><dl class="facts">${f.facts.map(x=>`<div><dt>${esc(x[0])}</dt><dd>${esc(x[1])}</dd></div>`).join("")}</dl></div>
+  <div class="stack"><h3>Sources</h3><ul style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:var(--t-sm)">${f.src.map(x=>`<li><a href="${x[1]}" target="_blank" rel="noopener">${esc(x[0])}</a></li>`).join("")}</ul>
+    <p class="note">EU volume of ${inr0.format(f.eu)} t/yr is a CarbonSetu estimate.</p></div>`;
+  gauge($("#c-gauge"),f,st);
+  if(f.eu){ const ser=[["Verified data",{basis:"verified",stress:false},"var(--s1)",""],["EU default values",{basis:"default",stress:false},"var(--s2)",""],["Stress: indirect added",{basis:"verified",stress:true},"var(--s3)","5 4"]].map(([n,o,c,d])=>({name:n,color:c,dash:d,values:YEARS.map(y=>toCur(firmRun(f,{...st,...o},y).cr))}));
+    lines($("#c-firm"),ser,{endLabels:true,h:260,fmtAxis:curAxis,fmtTip:fmtCur});
+    $("#c-firm").setAttribute("aria-label",`${f.name} CBAM charge by year. `+ser.map(s=>`${s.name}: ${fmtCur(s.values[4])} in 2030`).join("; ")); }
+}
+function drawerIsOpen(){ return $("#drawer").classList.contains("on"); }
+function openDrawer(id){
+  const d=$("#drawer");
+  if(!drawerIsOpen()){ drawerTrigger=document.activeElement; d.classList.add("on"); $("#scrim").classList.add("on"); d.removeAttribute("aria-hidden"); d.inert=false;
+    $("main").inert=true; $(".site-head").inert=true; document.body.classList.add("lock"); }
+  renderFirm(id); $("#firmBody").scrollTop=0;
+  const h=$("#h-firm"); if(h) h.focus({preventScroll:true});
+}
+function closeDrawer(){
+  const d=$("#drawer"); if(!drawerIsOpen()) return; const id=drawerId;
+  d.classList.remove("on"); $("#scrim").classList.remove("on"); d.setAttribute("aria-hidden","true"); d.inert=true;
+  $("main").inert=false; $(".site-head").inert=false; document.body.classList.remove("lock"); drawerId=null;
+  const back=$(`#firmTable a[href="#firm-${id}"]`)||((drawerTrigger&&drawerTrigger.isConnected&&drawerTrigger!==document.body)?drawerTrigger:null);
+  if(back) back.focus({preventScroll:true});
+}
+function initDrawer(){
+  $("#drawer").inert=true;
+  $("#drawerClose").addEventListener("click",()=>{ location.hash="dashboard"; });
+  $("#scrim").addEventListener("click",()=>{ location.hash="dashboard"; });
+  $("#drawerPrev").addEventListener("click",()=>{ const i=tableOrder.indexOf(drawerId); if(i>0) location.hash="firm-"+tableOrder[i-1]; });
+  $("#drawerNext").addEventListener("click",()=>{ const i=tableOrder.indexOf(drawerId); if(i>=0&&i<tableOrder.length-1) location.hash="firm-"+tableOrder[i+1]; });
+  document.addEventListener("keydown",e=>{ if(!drawerIsOpen()) return;
+    if(e.key==="Escape"){ e.preventDefault(); location.hash="dashboard"; return; }
+    if(e.key==="Tab"){ const f=$$("#drawer button:not([disabled]),#drawer a[href],#drawer [tabindex]:not([tabindex='-1'])").filter(n=>n.offsetParent!==null); if(!f.length) return;
+      const a=f[0], z=f[f.length-1]; if(e.shiftKey&&(document.activeElement===a||!$("#drawer").contains(document.activeElement))){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); } } });
+}
+
+/* ---------------- CALCULATOR ---------------- */
+const EXAMPLE={name:"Example Steels Pvt Ltd",product:"hrc",route:"BF/BOF",vol:120000,ebitda:1800,pass:100,india:0,int:2.60,ind:0.20,basis:"C",price:"base",rule:"law",t:[0,1,0,1,0,0],k:[0,1,0,0],eff:40};
+function fillProducts(){ $("#c-product").innerHTML=Object.entries(PRODUCTS).map(([k,p])=>`<option value="${k}">${p.label}</option>`).join(""); }
+function fillRoutes(keep){ const P=PRODUCTS[$("#c-product").value]; const cur=keep||$("#c-route").value; $("#c-route").innerHTML=Object.keys(P.routes).map(r=>`<option${r===cur?" selected":""}>${r}</option>`).join(""); }
+function setCalc(o){ $("#c-name").value=o.name; $("#c-product").value=o.product; fillRoutes(o.route); $("#c-vol").value=o.vol; $("#c-ebitda").value=o.ebitda; $("#c-pass").value=o.pass; $("#c-india").value=o.india; $("#c-int").value=o.int; $("#c-ind").value=o.ind; $("#c-basis").value=o.basis; $("#c-price").value=o.price; $("#c-rule").value=o.rule;
+  $$("#transChecks input").forEach((c,i)=>c.checked=!!o.t[i]); $$("#discChecks input").forEach((c,i)=>c.checked=!!o.k[i]); $("#c-eff").value=o.eff; }
+function num(id,def){ const v=parseFloat($(id).value); return isFinite(v)&&v>=0?v:def; }
+function renderCalc(){
+  const P=PRODUCTS[$("#c-product").value]; const route=$("#c-route").value; const bm=P.routes[route];
+  $("#routeField").hidden=Object.keys(P.routes).length<2;
+  $("#bmHint").textContent=`EU benchmark ${bm.toFixed(3)} tCO₂e/t · India default ${P.dflt.toFixed(2)} tCO₂e/t`;
+  $("#indHint").textContent=P.indirectPriced?"Priced by CBAM for this product":"Not priced for this product today; used only in the stress view";
+  $("#effOut").textContent=$("#c-eff").value;
+  const o={sector:P.sector,bm,dflt:P.dflt,see:num("#c-int",0),ind:num("#c-ind",0),vol:num("#c-vol",0),price:$("#c-price").value,rule:$("#c-rule").value,india:num("#c-india",0),pass:clamp(num("#c-pass",100),0,100)/100};
+  const ebitda=Math.max(1,num("#c-ebitda",1));
+  const name=$("#c-name").value.trim()||"Your company";
+  const yours=YEARS.map(y=>cbam({...o,stress:P.indirectPriced,useDefault:false},y));
+  const dflt=YEARS.map(y=>cbam({...o,useDefault:true},y));
+  const stress=P.indirectPriced?null:YEARS.map(y=>cbam({...o,stress:true},y));
+  const i30=YEARS.indexOf(2030);
+  const saving=dflt.reduce((a,r,i)=>a+r.cr-yours[i].cr,0);
+  $("#calcKpis").innerHTML=[
+    ["2030 CBAM charge",cr(yours[i30].cr),`€${eur0.format(yours[i30].perT)} per tonne`],
+    ["2030 EBITDA-at-Risk",pct(yours[i30].cr/ebitda*100),riskPill(yours[i30].cr/ebitda*100,o.vol>0)],
+    ["Verified data is worth",cr(Math.max(0,saving)),"2026–34, vs EU default values"]
+  ].map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${k[2]}</span></div>`).join("");
+  $("#calcChartTitle").textContent=`${name}: CBAM charge by year`;
+  const ser=[{name:"Your data",color:"var(--s1)",values:yours.map(r=>r.cr)},{name:"EU default",color:"var(--s2)",values:dflt.map(r=>r.cr)}];
+  if(stress) ser.push({name:"Indirect added",color:"var(--s3)",dash:"5 4",values:stress.map(r=>r.cr)});
+  lines($("#c-calc"),ser,{endLabels:true,h:260,fmtAxis:v=>"₹"+inr0.format(v),fmtTip:v=>cr(v)});
+  $("#c-calc").setAttribute("aria-label",`CBAM charge by year for ${name}. `+ser.map(s=>`${s.name}: ${cr(s.values[i30])} in 2030`).join("; "));
+  // readiness
+  const tr=$$("#transChecks input").reduce((a,c)=>a+(c.checked?+c.dataset.w:0),0);
+  const di=$$("#discChecks input").reduce((a,c)=>a+(c.checked?+c.dataset.w:0),0);
+  const ef=+$("#c-eff").value; const intForScore = P.sector==="Aluminium"? o.see+o.ind : o.see;
+  const em=emisScore(P.sector,intForScore);
+  const tot=W.emis*em+W.trans*tr+W.disc*di+W.eff*ef; const tier=$("#c-basis").value;
+  $("#calcScoreSub").innerHTML=`Score <b class="num">${Math.round(tot)}</b>/100 · confidence ${tierBadge(tier)}`;
+  $("#calcPillars").innerHTML=[["Emissions",em,35],["Transition plan",tr,25],["Disclosure",di,20],["Efficiency",ef,20]].map(p=>`<div class="pillar"><span>${p[0]} <span class="w">${p[2]}%</span></span><div class="scorebar"><span class="trk"><span class="fill" style="width:${p[1]}%;display:block"></span></span></div><span class="num">${Math.round(p[1])}</span></div>`).join("");
+  $("#calcTable").innerHTML=tableHTML(["Year","Free allocation","Net t owed per t","€ per tonne","Your charge","% EBITDA","On EU default"],
+    YEARS.map((y,i)=>[y,(FA[o.rule][y]*100).toFixed(1)+"%",yours[i].net.toFixed(3),"€"+eur0.format(yours[i].perT),cr(yours[i].cr),pct(yours[i].cr/ebitda*100),cr(dflt[i].cr)]),[1,2,3,4,5,6]);
+  const cut=+$("#c-cut").value/100; $("#cutOut").textContent=Math.round(cut*100)+"%";
+  const cutRuns=YEARS.map(y=>cbam({...o,see:o.see*(1-cut),stress:P.indirectPriced,useDefault:false},y));
+  const cutSave=yours.reduce((a,r,i)=>a+r.cr-cutRuns[i].cr,0), cut30=yours[i30].cr-cutRuns[i30].cr;
+  const tCut=o.vol*o.see*cut*YEARS.length; const perT=tCut>0? cutSave*1e7/EURINR/tCut : 0;
+  $("#cutKpis").innerHTML=[["Saved in 2030",cr(cut30),`${pct(cut30/ebitda*100)} of EBITDA`],["Saved 2026–34",cr(cutSave),"on EU-bound tonnes only"],["Value per tonne of CO₂ cut","€"+eur0.format(perT),"compare with the lever's abatement cost"]]
+    .map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${k[2]}</span></div>`).join("");
+  const msg = tier==="C" ? `Your number is an estimate (tier C). An EU importer may insist on the default value until your installation data is verified. That would cost ${cr(dflt[i30].cr)} in 2030 instead of ${cr(yours[i30].cr)}.`
+    : tier==="B" ? `Your figure is reported but not assured (tier B). Getting it verified by an accredited verifier protects about ${cr(Math.max(0,saving))} over 2026–34.`
+    : `Your data is verified (tier A), so the EU importer can use it in place of the default value.`;
+  $("#calcCallout").textContent=msg;
+}
+function initCalc(){
+  fillProducts(); setCalc(EXAMPLE);
+  $("#c-product").addEventListener("change",()=>{ fillRoutes(); const P=PRODUCTS[$("#c-product").value]; $("#c-int").value=(P.dflt*0.6).toFixed(2); renderCalc(); });
+  $("#calcForm").addEventListener("input",()=>{ $("#sampleFlag").hidden=true; renderCalc(); });
+  $("#calcForm").addEventListener("change",renderCalc);
+  $("#calcForm").addEventListener("submit",e=>e.preventDefault());
+  $("#loadJSW").addEventListener("click",()=>{ setCalc({name:"JSW Steel",product:"hrc",route:"BF/BOF",vol:890000,ebitda:29821,pass:100,india:0,int:2.36,ind:0.20,basis:"A",price:"base",rule:"law",t:[1,1,0,1,1,0],k:[1,1,0,1],eff:55}); $("#sampleFlag").hidden=false; $("#sampleFlag").textContent="● JSW Steel FY26 figures loaded; EU volume is an estimate"; renderCalc(); });
+  $("#resetCalc").addEventListener("click",()=>{ setCalc(EXAMPLE); $("#sampleFlag").hidden=false; $("#sampleFlag").textContent="● Example loaded: an unlisted steel exporter"; renderCalc(); });
+}
+
+/* ---------------- POLICY ---------------- */
+function renderPolicy(){
+  const pin=+$("#p-india").value, rec=+$("#p-recycle").value/100, scope=$("#p-scope").value;
+  $("#pIndiaOut").textContent="€"+pin; $("#pRecOut").textContent=Math.round(rec*100)+"%";
+  $$("#presetSeg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.v===pin));
+  const flows = scope==="india"
+    ? [{sector:"Steel",bm:1.370,see:2.45,vol:4010000},{sector:"Aluminium",bm:1.423,see:1.87,vol:313000}]
+    : FIRMS.filter(f=>f.eu>0).map(f=>({sector:f.sector,bm:PRODUCTS[f.product].routes[f.route],see:f.see,vol:f.eu}));
+  const rows=YEARS.map(y=>{ let eu=0,ind=0; flows.forEach(fl=>{ const net=Math.max(0,fl.see-fl.bm*FA.law[y]); const p=PRICE.base[y]; const pi=Math.min(pin,p);
+      eu+=fl.vol*net*(p-pi)*EURINR/1e7; ind+=fl.vol*net*pi*EURINR/1e7; }); return {year:y,eu,keep:ind*(1-rec),back:ind*rec}; });
+  const sum=k=>rows.reduce((a,r)=>a+r[k],0);
+  $("#polKpis").innerHTML=[["Paid to the EU, 2026–34",cr(sum("eu")),"CBAM certificates"],["Kept by India",cr(sum("keep")+sum("back")),`at €${pin}/t, once recognised`],["Returned to exporters",cr(sum("back")),`${Math.round(rec*100)}% of Indian revenue`],["Net cost to exporters",cr(sum("eu")+sum("keep")),"EU charge plus Indian price kept by government"]]
+    .map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${esc(k[2])}</span></div>`).join("");
+  const keys=[{k:"eu",name:"Paid to EU",color:"var(--s2)"},{k:"keep",name:"Kept by government",color:"var(--s1)"},{k:"back",name:"Returned to exporters",color:"var(--s3)"}];
+  stacked($("#c-policy"),rows,keys);
+  $("#c-policy").setAttribute("aria-label","Stacked bars by year showing CBAM paid to the EU, kept by the Indian government and returned to exporters. Totals 2026–34: "+keys.map(k=>`${k.name} ${cr(sum(k.k))}`).join(", "));
+  $("#t-policy").innerHTML=tableHTML(["Year",...keys.map(k=>k.name)],rows.map(r=>[r.year,...keys.map(k=>cr(r[k.k]))]),[1,2,3]);
+  renderOptions();
+}
+function initPolicy(){
+  $("#presetSeg").innerHTML=[0,10,25].map(v=>`<button type="button" data-v="${v}" aria-pressed="${v===25}">€${v}</button>`).join("");
+  $$("#presetSeg button").forEach(b=>b.addEventListener("click",()=>{ $("#p-india").value=b.dataset.v; renderPolicy(); }));
+  ["#p-india","#p-recycle","#p-scope"].forEach(s=>$(s).addEventListener("input",renderPolicy));
+}
+
+/* ---------------- LEARN ---------------- */
+const GLOSS=[
+ ["CBAM","Carbon Border Adjustment Mechanism. EU charge on the embedded emissions of imported steel, aluminium, cement, fertilisers, hydrogen and electricity."],
+ ["Embedded emissions (SEE)","Specific embedded emissions: tonnes of CO₂e released per tonne of product, direct and, where covered, indirect."],
+ ["Benchmark (BM)","The EU ETS product benchmark used to work out free allocation, per Reg. (EU) 2025/2620. 1.370 tCO₂e/t for BF/BOF hot-rolled steel."],
+ ["Free allocation factor (FA)","Share of free allowances EU producers still receive. CBAM charges only emissions above BM × FA. 97.5% in 2026, 0% in 2034."],
+ ["Default value","EU-set emissions for a country and product, used when verified data is missing. Comes with a 10–30% mark-up."],
+ ["EUA","EU Allowance, one tonne of CO₂ under the EU ETS. CBAM certificates are priced off EUA auctions."],
+ ["Article 9 deduction","CBAM credit for carbon price already paid in the exporting country. Needs EU recognition of that price."],
+ ["CCTS","India's Carbon Credit Trading Scheme, which sets emissions-intensity targets for covered plants."],
+ ["BRSR Core","SEBI's assured subset of the Business Responsibility and Sustainability Report, including GHG data."],
+ ["EBITDA-at-Risk","CBAM charge in a year divided by EBITDA. Adapted from S&P Trucost's Carbon Earnings at Risk."],
+ ["Confidence tier","A, B or C. How much of a CarbonSetu score rests on assured company data rather than estimates."],
+ ["BF/BOF, DRI/EAF","Blast furnace–basic oxygen furnace (coal-based) and direct reduced iron–electric arc furnace steel routes."]
+];
+const QUIZ=[
+ {q:"For Indian primary aluminium, which emissions does CBAM price today?",o:["Direct only","Direct and indirect","Indirect only"],a:0,e:"Aluminium is an Annex II good, so only direct emissions count. Captive coal power is indirect and excluded for now."},
+ {q:"What is the free allocation factor in 2030 under current law?",o:["77.5%","51.5%","39%"],a:1,e:"It drops from 77.5% in 2029 to 51.5% in 2030, the steepest single step."},
+ {q:"Why do cement and fertiliser firms in our sample show zero EBITDA-at-Risk?",o:["They have very low emissions","They sell almost nothing to the EU","CBAM doesn't cover them"],a:1,e:"Both sectors are covered, but India's 2025 EU exports were under €1 m for cement and €4.4 m for fertilisers."},
+ {q:"What happens if an exporter can't provide verified emissions data?",o:["CBAM doesn't apply","The EU default value plus a mark-up is used","The EU benchmark is used"],a:1,e:"Defaults carry a 10% mark-up in 2026, 20% in 2027 and 30% from 2028 (1% for fertilisers)."},
+ {q:"Does the EU–India FTA exempt Indian steel from CBAM?",o:["Yes, fully","Only until 2030","No"],a:2,e:"The FTA, concluded on 27 January 2026, has no CBAM exemption. A CBAM annex sets a work plan."}
+];
+function renderGloss(f){ const q=(f||"").toLowerCase(); $("#gloss").innerHTML=GLOSS.filter(g=>!q||(g[0]+g[1]).toLowerCase().includes(q)).map(g=>`<dt>${esc(g[0])}</dt><dd>${esc(g[1])}</dd>`).join("") || '<dd class="note">No term matches. Try "price" or "steel".</dd>'; }
+function initLearn(){
+  renderGloss(""); $("#glossSearch").addEventListener("input",e=>renderGloss(e.target.value));
+  $("#quiz").innerHTML=QUIZ.map((x,i)=>`<div class="q" role="group" aria-labelledby="qq${i}"><strong id="qq${i}">${i+1}. ${esc(x.q)}</strong><div class="opts">${x.o.map((o,j)=>`<button type="button" class="opt" data-q="${i}" data-o="${j}">${esc(o)}</button>`).join("")}</div><p class="fb" id="fb${i}" aria-live="polite"></p></div>`).join("")+`<p class="note" id="quizScore" aria-live="polite"></p>`;
+  const ans={};
+  $$("#quiz .opt").forEach(b=>b.addEventListener("click",()=>{ const i=+b.dataset.q,j=+b.dataset.o, x=QUIZ[i];
+    $$(`#quiz .opt[data-q="${i}"]`).forEach(o=>o.classList.remove("right","wrong")); b.classList.add(j===x.a?"right":"wrong");
+    if(j!==x.a) $(`#quiz .opt[data-q="${i}"][data-o="${x.a}"]`).classList.add("right");
+    $("#fb"+i).textContent=(j===x.a?"Correct. ":"Not quite. ")+x.e; ans[i]=j===x.a;
+    const n=Object.keys(ans).length; $("#quizScore").textContent=`${Object.values(ans).filter(Boolean).length} of ${n} answered correctly.`; }));
+  $$("[data-jump]").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); const t=document.getElementById(a.getAttribute("href").slice(1)); if(t){ t.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); t.setAttribute("tabindex","-1"); t.focus({preventScroll:true}); } }));
+}
+
+/* ---------------- METHOD ---------------- */
+function initMethod(){
+  $("#assumpTbody").innerHTML=[
+    ["Free allocation","97.5% (2026) → 51.5% (2030) → 0% (2034); proposal option to 2038"],
+    ["EU price, base","€82 (2026) → €126 (2030) → €150 (2034)"],["EU price, low / high","€85 / €145 in 2030"],
+    ["Default mark-up","10% / 20% / 30% from 2028; fertilisers 1%"],["FX","€1 = ₹106.12 (2 Nov 2026)"],
+    ["Pass-through","Exporter absorbs 100%"],["EU share of steel exports","30% (40% in 2025, quota cut ~30% from Jul 2026)"]
+  ].map(r=>`<tr><td>${r[0]}</td><td class="wrap">${r[1]}</td></tr>`).join("");
+  $("#srcTable").innerHTML=`<thead><tr><th scope="col">Firm</th><th scope="col" class="n">Intensity used</th><th scope="col" class="n">EU volume (t)</th><th scope="col" class="n">EBITDA (₹ cr)</th><th scope="col">Tier</th><th scope="col" class="wrap">Sources</th></tr></thead><tbody>${
+    FIRMS.map(f=>`<tr><td><a class="firm-link" href="#firm-${f.id}">${esc(f.name)}</a></td><td class="n">${f.see==null?"proxy":f.see.toFixed(2)}</td><td class="n">${inr0.format(f.eu)}</td><td class="n">${inr0.format(f.ebitda)}</td><td>${tierBadge(f.tier)}</td><td class="wrap">${f.src.map(s=>`<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join(" · ")}</td></tr>`).join("")}</tbody>`;
+}
+
+/* ---------------- SHARED: grouped bars (supports negatives) ---------------- */
+function gbars(container,cats,series,opts){
+  container.innerHTML=""; const W0=container.clientWidth||800; const H=opts.h||300; const m={t:16,r:12,b:opts.bottom||44,l:64};
+  const lg=document.createElement("div"); lg.className="legend"; lg.style.marginBottom="8px"; lg.innerHTML=series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join(""); container.appendChild(lg);
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},container);
+  const vals=series.flatMap(s=>s.values); const rawHi=Math.max(0,...vals), rawLo=Math.min(0,...vals);
+  const step=niceMax((rawHi-rawLo)/4||1); const hi=Math.max(step,Math.ceil(rawHi*1.04/step)*step); const lo=Math.floor(rawLo*1.04/step)*step;
+  const y=v=>m.t+(H-m.t-m.b)*(hi-v)/(hi-lo);
+  for(let v=lo;v<=hi+step*1e-6;v+=step){ el("line",{x1:m.l,x2:W0-m.r,y1:y(v),y2:y(v),class:"gridline"},svg); const t=el("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end"},svg); t.textContent=opts.fmtAxis(Math.abs(v)<step*1e-6?0:v); }
+  el("line",{x1:m.l,x2:W0-m.r,y1:y(0),y2:y(0),stroke:"var(--muted)","stroke-width":1},svg);
+  const gw=(W0-m.l-m.r)/cats.length, bw=Math.min(28,(gw*.78)/series.length);
+  const tip=tipFor(container);
+  cats.forEach((c,i)=>{ const gx=m.l+gw*i+(gw-bw*series.length-2*(series.length-1))/2;
+    series.forEach((s,j)=>{ const v=s.values[i]; const x=gx+j*(bw+2); const y0=y(0), y1=y(v); const top=Math.min(y0,y1), h=Math.max(1,Math.abs(y1-y0));
+      el("rect",{x,y:top,width:bw,height:h,rx:3,fill:s.color},svg); });
+    const lines=String(c).split("\n"); lines.forEach((ln,k)=>{ const t=el("text",{x:m.l+gw*i+gw/2,y:H-m.b+16+k*13,"text-anchor":"middle"},svg); t.textContent=ln; });
+    const hit=el("rect",{x:m.l+gw*i,y:m.t,width:gw,height:H-m.t-m.b,fill:"transparent",tabindex:"0","aria-label":String(c).replace("\n"," ")+": "+series.map(s=>`${s.name} ${opts.fmtTip(s.values[i])}`).join(", ")},svg);
+    const show=()=>{ tip.innerHTML=`<div style="margin-bottom:4px"><b>${esc(String(c).replace("\n"," "))}</b></div>`+series.map(s=>`<div class="row"><span><span class="sw" style="background:${s.color}"></span>${esc(s.name)}</span><b>${opts.fmtTip(s.values[i])}</b></div>`).join(""); placeTip(container,tip,m.l+gw*i+gw/2,m.t); };
+    hit.addEventListener("mouseenter",show); hit.addEventListener("focus",show); hit.addEventListener("mouseleave",()=>tip.classList.remove("on")); hit.addEventListener("blur",()=>tip.classList.remove("on"));
+  });
+}
+
+/* ---------------- DASHBOARD EXTRAS ---------------- */
+function renderStrips(){
+  const c=$("#c-strips"); c.innerHTML=""; const W0=c.clientWidth||900;
+  const groups=[
+    {name:"Steel · hot-rolled coil",max:5,marks:[[1.370,"EU benchmark 1.37","var(--accent)"],[2.2,"Green steel 2.2","var(--good)"],[4.28,"India default 4.28","var(--ochre)"]],firms:[["Tata Steel",2.45,"var(--s1)"],["JSW Steel",2.36,"var(--s1)"]]},
+    {name:"Aluminium · unwrought, direct",max:2.5,marks:[[1.423,"EU benchmark 1.42","var(--accent)"],[1.87,"India default 1.87","var(--ochre)"]],firms:[["Hindalco & NALCO (proxy)",1.87,"var(--s2)"]]},
+    {name:"Cement · Portland",max:1.6,marks:[[0.666,"EU benchmark 0.67","var(--accent)"],[1.48,"India default 1.48","var(--ochre)"]],firms:[["UltraTech",0.578,"var(--s3)"]]}];
+  const rowH=86, lab=Math.min(190,W0*.28), H=groups.length*rowH+10;
+  const svg=el("svg",{viewBox:`0 0 ${W0} ${H}`,width:W0,height:H},c);
+  groups.forEach((g,i)=>{ const y0=i*rowH+40; const x=v=>lab+(W0-lab-24)*v/g.max;
+    const t=el("text",{x:0,y:y0+4,class:"lbl-strong"},svg); t.textContent=g.name;
+    el("line",{x1:lab,x2:W0-24,y1:y0,y2:y0,stroke:"var(--line)","stroke-width":6,"stroke-linecap":"round"},svg);
+    for(let k=0;k<=g.max;k+= g.max>3?1:0.5){ const tt=el("text",{x:x(k),y:y0+26,"text-anchor":"middle"},svg); tt.textContent=k; }
+    g.marks.forEach(([v,l,col],j)=>{ el("line",{x1:x(v),x2:x(v),y1:y0-12,y2:y0+12,stroke:col,"stroke-width":2},svg); const tt=el("text",{x:x(v),y:y0-(j%2?28:16),"text-anchor":"middle"},svg); tt.textContent=l; tt.setAttribute("style",`fill:${col}`); });
+    g.firms.forEach(([n,v,col],j)=>{ el("circle",{cx:x(v),cy:y0,r:7,fill:col,stroke:"var(--surface)","stroke-width":2},svg); const tt=el("text",{x:x(v)+(j?-10:10),y:y0+40,"text-anchor":j?"end":"start",class:"lbl-strong"},svg); tt.textContent=`${n} ${v}`; el("line",{x1:x(v),x2:x(v),y1:y0+8,y2:y0+30,stroke:"var(--muted)","stroke-width":1},svg); });
+  });
+  c.setAttribute("aria-label","Emissions per tonne against EU benchmark and India default. Steel: benchmark 1.37, Tata Steel 2.45, JSW 2.36, India default 4.28. Aluminium direct: benchmark 1.42, firms at default 1.87. Cement: benchmark 0.67, UltraTech 0.58, default 1.48.");
+}
+const UNLISTED={name:"Illustrative unlisted DRI steel exporter",product:"hrc",route:"DRI/EAF",vol:40000,ebitda:110,pass:100,india:0,int:3.10,ind:0.30,basis:"C",price:"base",rule:"law",t:[0,0,0,0,0,0],k:[0,0,0,0],eff:35};
+function renderUnlisted(){
+  const P=PRODUCTS.hrc, bm=P.routes["DRI/EAF"];
+  const o={sector:"Steel",bm,dflt:P.dflt,see:UNLISTED.int,ind:0,vol:UNLISTED.vol,price:"base",rule:"law",india:0,pass:1};
+  const est=cbam(o,2030), def=cbam({...o,useDefault:true},2030);
+  $("#unlistedBody").innerHTML=`<p class="note">A coal-DRI and induction-furnace mill selling ${inr0.format(UNLISTED.vol)} t a year of hot-rolled coil to the EU, with EBITDA of ₹${UNLISTED.ebitda} crore. Its intensity of ${UNLISTED.int} tCO₂e/t is an estimate from a credit-rating note, so it sits in tier C.</p>
+  <div class="facts" style="margin-top:var(--sp-3)">
+   <div><dt>EU benchmark (DRI/EAF route)</dt><dd>${bm.toFixed(3)} t</dd></div><div><dt>Free allocation left, 2030</dt><dd>${(bm*FA.law[2030]).toFixed(3)} t</dd></div>
+   <div><dt>2030 charge if its estimate is accepted</dt><dd>${mcr(est.cr)} (${pct(est.cr/UNLISTED.ebitda*100)})</dd></div><div><dt>2030 charge on EU default (likely)</dt><dd>${mcr(def.cr)} (${pct(def.cr/UNLISTED.ebitda*100)})</dd></div></div>
+  <p class="callout" style="margin-top:var(--sp-3)">Either way CBAM exceeds this firm's EBITDA by 2030. The DRI/EAF benchmark is only 0.481 t, so coal-based DRI gets little free allocation. Verified data and a switch to gas or hydrogen DRI are what keep it in the EU market.</p>`;
+}
+
+/* ---------------- POLICY: compare options ---------------- */
+function policyTotals(s,pin){ // s = share on defaults
+  let eu=0,keep=0;
+  const flows=[{sector:"Steel",bm:1.370,see:2.45,dflt:4.28,vol:4010000},{sector:"Aluminium",bm:1.423,see:1.87,dflt:1.87,vol:313000}];
+  YEARS.forEach(y=>{ flows.forEach(f=>{ const vn=Math.max(0,f.see-f.bm*FA.law[y]), dn=Math.max(0,f.dflt*(1+markup(f.sector,y))-f.bm*FA.law[y]);
+    const net=(1-s)*vn+s*dn, p=PRICE.base[y], pi=Math.min(pin,p); eu+=f.vol*net*(p-pi)*EURINR/1e7; keep+=f.vol*net*pi*EURINR/1e7; }); });
+  return {eu,keep};
+}
+function renderOptions(){
+  const s=+$("#o-default").value/100, reb=+$("#o-rebate").value/100, prog=Math.max(0,+$("#o-prog").value||0);
+  const pin=+$("#p-india").value, rec=+$("#p-recycle").value/100;
+  $("#oDefOut").textContent=Math.round(s*100)+"%"; $("#oRebOut").textContent=Math.round(reb*100)+"%";
+  const A=policyTotals(s,0), B=policyTotals(s,pin), V=policyTotals(0,0), C2=policyTotals(0,pin);
+  const opts=[
+    {n:"1. Do nothing",short:"1. Do nothing",eu:A.eu,firm:A.eu,gov:0,rec:"No",risk:"None; India loses the revenue"},
+    {n:`2. Indian price €${pin}, government keeps`,short:"2. Price,\ngovernment keeps",eu:B.eu,firm:B.eu+B.keep,gov:B.keep,rec:"Yes",risk:"Needs EU recognition of the CCTS"},
+    {n:`3. Indian price €${pin}, ${Math.round(rec*100)}% returned`,short:"3. Price,\nrevenue returned",eu:B.eu,firm:B.eu+B.keep*(1-rec),gov:B.keep*(1-rec),rec:"Yes",risk:"Rebate design must avoid WTO subsidy claims"},
+    {n:"4. Fund verification for all exporters",short:"4. Verification\nsupport",eu:V.eu,firm:V.eu,gov:-prog,rec:"No",risk:"Low; needs accredited verifiers in India"},
+    {n:`5. Export rebate of ${Math.round(reb*100)}%`,short:"5. Export\nrebate",eu:A.eu,firm:A.eu*(1-reb),gov:-A.eu*reb,rec:"No",risk:"High: likely countervailable subsidy; no emissions cut"},
+    {n:"6. Verification + Indian price + return",short:"6. Combined",eu:C2.eu,firm:C2.eu+C2.keep*(1-rec),gov:C2.keep*(1-rec)-prog,rec:"Yes",risk:"Needs EU recognition; best long-run mix"}];
+  gbars($("#c-options"),opts.map(o=>o.short),
+    [{name:"Paid to EU",color:"var(--s2)",values:opts.map(o=>o.eu)},{name:"Net cost to exporters",color:"var(--s1)",values:opts.map(o=>o.firm)},{name:"Net to Indian government",color:"var(--s3)",values:opts.map(o=>o.gov)}],
+    {h:340,bottom:52,fmtAxis:v=>(v<0?"−":"")+"₹"+inr0.format(Math.abs(Math.round(v/1000)))+"k",fmtTip:v=>(v<0?"−":"")+cr(Math.abs(v))});
+  $("#c-options").setAttribute("aria-label","Grouped bars comparing six cost-sharing options. "+opts.map(o=>`${o.n}: paid to EU ${cr(o.eu)}, exporters ${cr(o.firm)}, government ${cr(o.gov)}`).join("; "));
+  const best=opts.reduce((a,b)=>b.firm<a.firm?b:a);
+  $("#t-options").innerHTML=tableHTML(["Option","Paid to EU","Net cost to exporters","Net to government","Needs EU recognition","Main risk"],
+    opts.map(o=>[`<strong>${esc(o.n)}</strong>`,cr(o.eu),cr(o.firm),(o.gov<0?"−":"")+cr(Math.abs(o.gov)),o.rec,esc(o.risk)]),[1,2,3],[0,5]).replace("<table>","<table><caption class=\"sr-only\">Six cost-sharing options compared</caption>");
+  const lev=Math.max(0,B.keep*(1-rec))*8;
+  $("#optCallout").innerHTML=`<strong>What the numbers say.</strong> Moving exporters off EU default values (option 4) saves ${cr(A.eu-V.eu)} over 2026–34 for a programme costing ${cr(prog)}. An Indian carbon price only moves money from Brussels to Delhi; it doesn't cut the total. If the government's share under option 3 (${cr(Math.max(0,B.keep*(1-rec)))}) were used as first-loss or concessional capital, IFC estimates each ₹1 can mobilise about ₹8 of private finance, roughly ${cr(lev)} for green steel and green ammonia. The lowest net cost to exporters here comes from: ${esc(best.n)}.`;
+}
+
+/* ---------------- AI EXTRACTION ---------------- */
+let SAMPLE=null, DL=null, xCtl=null, xLast=null;
+const SAMPLE_BRSR=`[Page 1]
+SECTION C: PRINCIPLE WISE PERFORMANCE DISCLOSURE
+PRINCIPLE 6: Businesses should respect and make efforts to protect and restore the environment
+Essential Indicators
+1. Details of total energy consumption (in Joules or multiples) and energy intensity, in the following format:
+Parameter | FY 2025-26 (Current Financial Year) | FY 2024-25 (Previous Financial Year)
+Total energy consumption (A+B+C+D+E+F) (GJ) | 546,920,000 | 528,980,000
+Energy intensity per tonne of crude steel (GJ/tcs) | 24.34 | 25.53
+Note: Indicate if any independent assessment/evaluation/assurance has been carried out by an external agency? Yes. Reasonable assurance by Price Waterhouse & Co Chartered Accountants LLP.
+[Page 2]
+7. Please provide details of greenhouse gas emissions (Scope 1 and Scope 2 emissions) & its intensity, in the following format:
+Parameter | Unit | FY 2025-26 | FY 2024-25
+Total Scope 1 emissions (Break-up of the GHG into CO2, CH4, N2O, HFCs, PFCs, SF6, NF3, if available) | Metric tonnes of CO2 equivalent | 64,000,000 | 61,000,000
+Total Scope 2 emissions (location-based) | Metric tonnes of CO2 equivalent | 5,000,000 | 5,000,000
+Crude steel production | Million tonnes | 22.47 | 20.72
+CO2 emission intensity (worldsteel methodology) | tCO2/tcs | 2.45 | 2.46
+8. Does the entity have any project related to reducing Green House Gas emission? Yes. The Company has committed to Net Zero by 2045.`;
+const XFIELDS=[["scope1","Scope 1 emissions","tCO₂e"],["scope2","Scope 2 emissions","tCO₂e"],["energy","Total energy consumption","GJ"],["production","Main product output","tonnes"],["intensity","Emissions per tonne of product","tCO₂e/t"],["assurance","Assurance","" ],["netzero","Net-zero target year",""]];
+function xStatus(t){ $("#x-status").textContent=t; }
+function xStep(i,active){ $$("#x-steps li").forEach((li,j)=>{ const done=j<i, on=j===i&&active; li.classList.toggle("done",done); li.classList.toggle("active",on);
+  if(on) li.setAttribute("aria-current","step"); else li.removeAttribute("aria-current"); li.querySelector(".n").textContent=done?"✓":String(j+1); }); }
+function xCount(){ $("#x-count").textContent=inr0.format($("#x-text").value.length)+" characters"; }
+function loadScript(src){ return new Promise((res,rej)=>{ if(document.querySelector(`script[src="${src}"]`)) return res(); const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("load")); document.head.appendChild(s); }); }
+async function readPdf(file){
+  const base="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  xStatus("Loading the PDF reader…");
+  await loadScript(base+"pdf.min.js"); await loadScript(base+"pdf.worker.min.js");
+  const lib=window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc=base+"pdf.worker.min.js";
+  const doc=await lib.getDocument({data:await file.arrayBuffer(),isEvalSupported:false,disableFontFace:true}).promise;
+  const pages=[]; const re=/scope\s*[12]|greenhouse|GHG|energy consumption|emission intensity|tco2|principle\s*6/i;
+  for(let i=1;i<=doc.numPages;i++){ xStatus(`Reading page ${i} of ${doc.numPages}…`); const tc=await (await doc.getPage(i)).getTextContent(); const t=tc.items.map(it=>it.str).join(" ").replace(/\s+/g," "); pages.push({n:i,t}); }
+  let keep=pages.filter(p=>re.test(p.t)); if(!keep.length) keep=pages.slice(0,20);
+  let out="", used=0; for(const p of keep){ const chunk=`[Page ${p.n}]\n${p.t}\n`; if(out.length+chunk.length>120000) break; out+=chunk; used++; }
+  xStatus(`Read ${doc.numPages} pages; kept ${used} that mention emissions or energy.`);
+  return out;
+}
+function pageOf(text,idx){ const before=text.slice(0,idx); const m=[...before.matchAll(/\[Page (\d+)\]/g)]; return m.length?+m[m.length-1][1]:null; }
+function offlineExtract(text){
+  const num=s=>{ const v=parseFloat(String(s).replace(/,/g,"")); return isFinite(v)?v:null; };
+  const grab=(re,opts={})=>{ const tb=new RegExp(re.source+"\\|",re.flags); let m=tb.exec(text); if(m){ m={index:m.index,0:m[0].slice(0,-1)}; } else m=re.exec(text); if(!m) return null; const after=text.slice(m.index+m[0].length,m.index+m[0].length+260).split(/\n/)[0];
+    const nums=[...after.matchAll(/(\d{1,3}(?:,\d{2,3})+(?:\.\d+)?|\d+\.\d+|\d{3,})/g)].map(x=>x[1]).filter(x=>{const v=num(x); return !(Number.isInteger(v)&&v>=2000&&v<=2100);});
+    if(!nums.length) return null; let v=num(nums[0]); const line=(m[0]+after); if(opts.million && /million/i.test(line)) v=v*1e6;
+    return {value:v,page:pageOf(text,m.index),quote:line.trim().slice(0,200)}; };
+  const f={};
+  f.scope1=grab(/total scope\s*1 emissions[^|\n]*/i); f.scope2=grab(/total scope\s*2 emissions[^|\n]*/i);
+  f.energy=grab(/total energy consumption[^|\n]*/i);
+  f.production=grab(/(crude steel production|total production|production of [a-z ]+)[^|\n]*/i,{million:true});
+  f.intensity=grab(/(emission intensity|ghg intensity)[^|\n]*(tco2\/t|tcs|per tonne)[^|\n]*/i)||grab(/emission intensity[^|\n]*/i);
+  const a=/(reasonable|limited) assurance by ([^.\n]+)/i.exec(text); f.assurance=a?{value:`${a[1][0].toUpperCase()+a[1].slice(1)} assurance, ${a[2].trim()}`,page:pageOf(text,a.index),quote:a[0]}:null;
+  const z=/net[\s-]?zero (?:by|target of|in) (20\d\d)/i.exec(text); f.netzero=z?{value:+z[1],page:pageOf(text,z.index),quote:z[0]}:null;
+  const prodName=/crude steel/i.test(text)?"crude steel":/cement/i.test(text)?"cement":/alumin/i.test(text)?"aluminium":/urea/i.test(text)?"urea":"";
+  return {company:"",fiscal_year:(text.match(/FY\s?20\d\d-\d\d/)||[""])[0],product:prodName,fields:f};
+}
+async function claudeExtract(text){
+  const prompt=`You extract climate data from an Indian company's BRSR (SEBI Business Responsibility and Sustainability Report) or annual report.
+The text has [Page n] markers. Use the most recent fiscal year in the text. Never guess: use null when a figure is not stated.
+Return ONLY a JSON object of this shape:
+{"company": string|null, "fiscal_year": string|null, "product": string|null,
+ "fields": {
+   "scope1": {"value": number|null, "page": number|null, "quote": string},
+   "scope2": {"value": number|null, "page": number|null, "quote": string},
+   "energy": {"value": number|null, "page": number|null, "quote": string},
+   "production": {"value": number|null, "page": number|null, "quote": string},
+   "intensity": {"value": number|null, "page": number|null, "quote": string},
+   "assurance": {"value": string|null, "page": number|null, "quote": string},
+   "netzero": {"value": number|null, "page": number|null, "quote": string}
+ },
+ "notes": string}
+Units: scope1 and scope2 in tonnes CO2e (convert million tonnes by multiplying by 1,000,000); energy in GJ (1 TJ = 1,000 GJ; 1 MWh = 3.6 GJ); production in tonnes of the main product (name it in "product"); intensity in tCO2e per tonne of product as the company states it; assurance as "Reasonable/Limited assurance, <provider>"; netzero as a year. "quote" is the exact words from the text, at most 25 words. "page" is the number in the nearest preceding [Page n] marker. "notes": one sentence on anything unusual (method, boundary, missing data).
+
+TEXT:
+${text.slice(0,120000)}`;
+  xCtl=new AbortController(); $("#x-stop").hidden=false;
+  try{ return await SAMPLE.json(prompt,{signal:xCtl.signal,modelTier:"default",onText:({text})=>xStatus(`Claude is writing… ${inr0.format(text.length)} characters`)}); }
+  finally{ $("#x-stop").hidden=true; }
+}
+function xRender(r,engine){
+  xLast={...r,engine};
+  const f=r.fields||{};
+  $("#x-title").textContent=(r.company?r.company+": extracted figures":"Extracted figures")+(r.fiscal_year?` (${r.fiscal_year})`:"");
+  $("#x-engine").textContent=`Engine: ${engine}${r.product?` · product: ${r.product}`:""}`;
+  const fmtV=(k,v)=> v==null?"–": (typeof v==="number"? (k==="intensity"||k==="netzero"? String(v) : inr0.format(v)) : esc(String(v)));
+  $("#x-table").innerHTML=`<table><thead><tr><th>Field</th><th class="n">Value</th><th>Unit</th><th>Page</th><th class="wrap">Evidence</th></tr></thead><tbody>${XFIELDS.map(([k,l,u])=>{ const x=f[k]||{}; return `<tr><td>${l}</td><td class="n num">${fmtV(k,x.value)}</td><td>${u}</td><td class="num">${x.page??"–"}</td><td class="wrap note">${x.quote?"“"+esc(String(x.quote))+"”":"Not found"}</td></tr>`; }).join("")}</tbody></table>`;
+  // checks
+  const g=k=>(f[k]&&typeof f[k].value==="number")?f[k].value:null;
+  const s1=g("scope1"),s2=g("scope2"),pr=g("production"),it=g("intensity");
+  const checks=[];
+  checks.push([s1!=null&&s2!=null,"Scope 1 and Scope 2 both found",s1!=null&&s2!=null?`Scope 2 is ${pct(s2/(s1+s2)*100)} of the total`:"One or both missing: the firm would fall to tier C"]);
+  if(s1!=null&&pr){ const der=(s1+(s2||0))/pr; const gap=it?Math.abs(der-it)/it*100:null;
+    checks.push([gap==null||gap<=10,`Derived intensity (Scope 1 + 2) ÷ output = ${der.toFixed(2)} tCO₂e/t`, it?`Reported ${it}; difference ${gap.toFixed(0)}%. ${gap>10?"Flag: the reported figure likely uses a different method (for steel, worldsteel with by-product credits). CBAM uses installation boundaries, so verify before scoring.":"Consistent."}`:"No reported intensity to compare."]); }
+  else checks.push([false,"Intensity cross-check","Output or Scope 1 missing, so intensity can't be derived"]);
+  checks.push([pr!=null,"Physical intensity, not ₹ intensity",pr!=null?"Output found, so emissions per tonne can be computed. BRSR only requires intensity per rupee of turnover; CBAM needs tonnes.":"No production figure: BRSR's mandatory intensity is per rupee of turnover, which CBAM can't use. Pull output from the annual report."]);
+  if(/alumin/i.test(String(r.product||""))) checks.push([false,"Captive power boundary","For aluminium, BRSR Scope 1 includes captive coal power. CBAM treats that power as indirect (outside scope today), so separate smelter process emissions before scoring."]);
+  if(/urea/i.test(String(r.product||""))) checks.push([false,"Urea CO₂","Check whether Scope 1 nets out CO₂ bound in urea (about 0.73 tCO₂/t). CBAM counts it."]);
+  const asr=f.assurance&&f.assurance.value; checks.push([!!asr&&/reasonable/i.test(asr),"Assurance",asr?esc(String(asr)):"No assurance statement found: tier B at best"]);
+  checks.push([!!(f.netzero&&f.netzero.value),"Net-zero target",f.netzero&&f.netzero.value?`Target year ${f.netzero.value}: counts toward the transition pillar`:"None found"]);
+  const tier = (s1!=null&&pr&&asr&&/reasonable/i.test(asr))?"A":(s1!=null&&pr)?"B":"C";
+  $("#x-checks").innerHTML=checks.map(([ok,t,d])=>`<li><span class="pill ${ok?"low":"mod"}"><span class="dot" aria-hidden="true"></span>${ok?"Pass":"Check"}</span><div><strong>${t}</strong><br><span class="note">${d}</span></div></li>`).join("")+`<li><span class="tier ${tier}" aria-label="Tier ${tier}">${tier}</span><div><strong>Confidence tier ${tier}</strong><br><span class="note">${r.notes?esc(String(r.notes)):"Based on which figures were found and whether they are assured."}</span></div></li>`;
+  xLast.tier=tier; xLast.derived= (s1!=null&&pr)? (s1+(s2||0))/pr : null;
+  xStep(4,false);
+  $("#x-use").disabled=false; if(DL){ $("#x-dl").hidden=false; $("#x-dl").disabled=false; }
+}
+function xErrCopy(code){ return ({not_granted:"Claude wasn't allowed for this page, so the offline extractor ran instead.",sampling_disabled:"Claude isn't available on this account; the offline extractor ran instead.",rate_limited:"Too many requests just now. Wait a minute and try again.",prompt_too_large:"The text is too long. Paste just the Principle 6 section.",invalid_json:"Claude's answer couldn't be read as data. Try again.",refused:"Claude declined this text. Try the Principle 6 section only.",session_expired:"Your session expired. Sign in again.",cancelled:"Stopped."})[code]||"Something went wrong reaching Claude. Try again, or use the offline extractor."; }
+function initExtract(){
+  $("#x-text").addEventListener("input",()=>{ xCount(); xStep($("#x-text").value.trim()?1:0,false); });
+  $("#x-sample").addEventListener("click",()=>{ $("#x-text").value=SAMPLE_BRSR; xCount(); xStep(1,false); xStatus("Sample excerpt loaded. Press Extract."); });
+  $("#x-replay").addEventListener("click",async()=>{ const b=$("#x-replay"); b.disabled=true; const fast=matchMedia("(prefers-reduced-motion: reduce)").matches; const wait=ms=>new Promise(r=>setTimeout(r,fast?60:ms));
+    try{ $("#x-text").value=SAMPLE_BRSR; xCount(); xStep(0,true); xStatus(`Replay · 1 of 4 · Ingest: sample excerpt loaded (${inr0.format(SAMPLE_BRSR.length)} characters).`); await wait(800);
+      const pages=(SAMPLE_BRSR.match(/\[Page \d+\]/g)||[]).length; xStep(1,true); xStatus(`Replay · 2 of 4 · Locate: ${pages} pages marked; emissions and energy tables found.`); await wait(800);
+      xStep(2,true); xStatus("Replay · 3 of 4 · Extract: reading each figure with its page and quote…"); await wait(900);
+      xStep(3,true); const r=offlineExtract(SAMPLE_BRSR); await wait(500);
+      xRender(r,"Instant demo replay · offline pattern matcher (no AI)"); xStatus("Replay · 4 of 4 · Validate: done. This replay used the offline extractor; press Extract with Claude for the live AI run."); }
+    finally{ b.disabled=false; } });
+  $("#x-file").addEventListener("change",async e=>{ const f=e.target.files[0]; if(!f) return;
+    try{ if(/\.txt$/i.test(f.name)||f.type==="text/plain"){ $("#x-text").value=await f.text(); xStatus("Text file loaded."); }
+      else { $("#x-text").value=await readPdf(f); } xCount(); xStep(1,false); }
+    catch(err){ xStatus("This PDF couldn't be read here. Copy the Principle 6 section from it and paste it into the box."); } });
+  $("#x-offline").addEventListener("click",()=>{ const t=$("#x-text").value.trim(); if(!t){ xStatus("Add some text first: upload a PDF, paste text, or load the sample."); return; } xRender(offlineExtract(t),"Offline pattern matcher (no AI)"); xStatus("Done. The offline extractor only finds figures in standard BRSR wording."); });
+  $("#x-stop").addEventListener("click",()=>xCtl&&xCtl.abort());
+  $("#x-run").addEventListener("click",async()=>{ const t=$("#x-text").value.trim(); if(!t){ xStatus("Add some text first: upload a PDF, paste text, or load the sample."); return; }
+    if(!SAMPLE){ xRender(offlineExtract(t),"Offline pattern matcher (Claude not available in this view)"); xStatus("Claude isn't available here, so the offline extractor ran."); return; }
+    const b=$("#x-run"); b.disabled=true; xStep(2,true); xStatus("Thinking… (the first time, your browser asks you to allow Claude)");
+    try{ const r=await claudeExtract(t); if(!r||typeof r!=="object"||!r.fields) throw {code:"invalid_json"}; xRender(r,"Claude"); xStatus("Done. Check each figure against its quote before using it."); }
+    catch(e){ const code=e&&e.code; xStep(1,false); xStatus(xErrCopy(code)); if(code==="not_granted"||code==="sampling_disabled"){ SAMPLE=null; $("#x-engineNote").textContent="Claude isn't available in this view. The offline extractor works on standard BRSR wording."; xRender(offlineExtract(t),"Offline pattern matcher"); } }
+    finally{ b.disabled=false; } });
+  $("#x-use").addEventListener("click",()=>{ if(!xLast) return; const f=xLast.fields||{}; const it=(f.intensity&&typeof f.intensity.value==="number")?f.intensity.value:xLast.derived;
+    if(xLast.company) $("#c-name").value=xLast.company; if(it) $("#c-int").value=(+it).toFixed(2); $("#c-basis").value=xLast.tier||"B";
+    const k=$$("#discChecks input"); if(k[0]) k[0].checked=xLast.tier==="A"; if(k[1]) k[1].checked=!!(f.intensity&&f.intensity.value!=null);
+    const tz=$$("#transChecks input"); if(tz[0]) tz[0].checked=!!(f.netzero&&f.netzero.value);
+    $("#sampleFlag").hidden=false; $("#sampleFlag").textContent="● Figures loaded from the BRSR extraction; add EU volume and EBITDA"; location.hash="calculator"; });
+  $("#x-dl").addEventListener("click",async()=>{ if(!DL||!xLast) return; try{ await DL.save({filename:"carbonsetu-brsr-extract.json",data:JSON.stringify(xLast,null,2)}); xStatus("Saved."); }catch(e){ xStatus(e&&e.code==="declined"?"Download cancelled.":"Download isn't available here."); } });
+  xCount();
+}
+
+/* ---------------- INVESTOR ---------------- */
+const INV_YEARS=["FY27","FY28","FY29","FY30","FY31"];
+const INV_BASE={banks:[3,10,20,32,45],importers:[5,20,45,80,120],producers:[10,40,100,180,280],govt:[1,3,5,7,9],rated:[100,300,600,1000,1500],fte:[6,10,15,20,25]};
+const INV_PRICE={banks:12,importers:6000*106.12/1e5,producers:3,govt:5}; // ₹ lakh per year
+let invPlan=null;
+function computePlan(){
+  const g=+$("#i-scen").value, pi=+$("#i-price").value/100, fte=+$("#i-fte").value, ai=Math.max(0,+$("#i-ai").value||0)/1e5;
+  const rows=INV_YEARS.map((yr,i)=>{ const f=(1+pi)**i, sc=k=>Math.round(INV_BASE[k][i]*g);
+    const cust={banks:sc("banks"),importers:sc("importers"),producers:sc("producers"),govt:Math.max(1,sc("govt"))};
+    const rev={}; Object.keys(cust).forEach(k=>rev[k]=cust[k]*INV_PRICE[k]*f);
+    const revenue=Object.values(rev).reduce((a,b)=>a+b,0);
+    const rated=Math.round(INV_BASE.rated[i]*Math.max(1,g)); const team=INV_BASE.fte[i]*fte*(1.08**i);
+    const aiCost=20+rated*ai, partners=revenue*.08, sm=revenue*.20+30, reg=i===0?40:25;
+    const cost=team+aiCost+partners+sm+reg;
+    return {yr,cust,rev,revenue,rated,team,aiCost,partners,sm,reg,cost,ebitda:revenue-cost};
+  });
+  let cum=0,minCum=0; rows.forEach(r=>{ cum+=r.ebitda; r.cum=cum; minCum=Math.min(minCum,cum); });
+  const ask=Math.ceil((-minCum*1.25)/100)*100; // lakh, rounded to ₹1 crore
+  const be=rows.find(r=>r.ebitda>0);
+  return {rows,ask,be,minCum};
+}
+function renderInvestor(){
+  $("#iPriceOut").textContent=$("#i-price").value+"%"; $("#iFteOut").textContent="₹"+$("#i-fte").value+" lakh";
+  const P=computePlan(); invPlan=P; const R=P.rows, L=v=>v/100; // lakh → crore
+  const askCr=P.ask/100;
+  $("#askText").textContent=`₹${inr0.format(askCr)} crore seed to cover the peak cash need of ₹${inr1.format(-P.minCum/100)} crore with a 25% buffer${P.be?`, reaching EBITDA break-even in ${P.be.yr}`:""}.`;
+  $("#invKpis").innerHTML=[["FY31 revenue","₹"+inr1.format(L(R[4].revenue))+" cr",`${R[4].cust.banks+R[4].cust.importers+R[4].cust.producers+R[4].cust.govt} paying customers`],
+    ["FY31 EBITDA","₹"+inr1.format(L(R[4].ebitda))+" cr",`margin ${pct(R[4].ebitda/R[4].revenue*100)}`],
+    ["Break-even year",P.be?P.be.yr:"After FY31","first year with positive EBITDA"],
+    ["Seed ask","₹"+inr0.format(askCr)+" cr","peak cash need + 25%"]].map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${esc(k[2])}</span></div>`).join("");
+  gbars($("#c-inv"),INV_YEARS,[{name:"Revenue",color:"var(--s1)",values:R.map(r=>L(r.revenue))},{name:"Costs",color:"var(--s2)",values:R.map(r=>L(r.cost))},{name:"EBITDA",color:"var(--s3)",values:R.map(r=>L(r.ebitda))}],{h:300,fmtAxis:v=>(v<0?"−":"")+"₹"+inr0.format(Math.abs(v)),fmtTip:v=>(v<0?"−":"")+"₹"+inr1.format(Math.abs(v))+" cr"});
+  $("#c-inv").setAttribute("aria-label","Revenue, costs and EBITDA by year in crore: "+R.map(r=>`${r.yr} revenue ${inr1.format(L(r.revenue))}, costs ${inr1.format(L(r.cost))}, EBITDA ${inr1.format(L(r.ebitda))}`).join("; "));
+  const f=v=>inr1.format(L(v));
+  const lines=[["Firms rated",r=>inr0.format(r.rated)],["Paying banks / NBFCs / funds",r=>r.cust.banks],["Paying EU importers",r=>r.cust.importers],["Paying Indian producers",r=>r.cust.producers],["Paying government / think tanks",r=>r.cust.govt],
+    ["Revenue: banks",r=>f(r.rev.banks)],["Revenue: EU importers",r=>f(r.rev.importers)],["Revenue: producers",r=>f(r.rev.producers)],["Revenue: government",r=>f(r.rev.govt)],["<strong>Total revenue</strong>",r=>`<strong>${f(r.revenue)}</strong>`],
+    ["Team",r=>f(r.team)],["AI extraction and data",r=>f(r.aiCost)],["Partners and verification",r=>f(r.partners)],["Sales and marketing",r=>f(r.sm)],["SEBI, legal, compliance",r=>f(r.reg)],["<strong>Total costs</strong>",r=>`<strong>${f(r.cost)}</strong>`],
+    ["<strong>EBITDA</strong>",r=>`<strong>${f(r.ebitda)}</strong>`],["Cumulative cash before funding",r=>f(r.cum)]];
+  $("#t-inv").innerHTML=`<table><caption class="sr-only">Five-year plan in ₹ crore unless stated</caption><thead><tr><th scope="col">₹ crore unless stated</th>${INV_YEARS.map(y=>`<th scope="col" class="n">${y}</th>`).join("")}</tr></thead><tbody>${lines.map(([l,fn])=>`<tr><td>${l}</td>${R.map(r=>`<td class="n num">${fn(r)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function planCsv(){ const R=invPlan.rows, L=v=>(v/100).toFixed(2);
+  const rows=[["Metric",...INV_YEARS],["Firms rated",...R.map(r=>r.rated)],["Banks",...R.map(r=>r.cust.banks)],["EU importers",...R.map(r=>r.cust.importers)],["Producers",...R.map(r=>r.cust.producers)],["Government",...R.map(r=>r.cust.govt)],
+    ["Revenue (Rs cr)",...R.map(r=>L(r.revenue))],["Costs (Rs cr)",...R.map(r=>L(r.cost))],["EBITDA (Rs cr)",...R.map(r=>L(r.ebitda))],["Cumulative cash (Rs cr)",...R.map(r=>L(r.cum))]];
+  return rows.map(r=>r.join(",")).join("\n"); }
+function planReport(){ const R=invPlan.rows, L=v=>inr1.format(v/100);
+  const t=(h,rows)=>`<table><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join("")}</tr>`).join("")}</table>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>CarbonSetu investor report</title><style>body{font:15px/1.6 Georgia,serif;max-width:820px;margin:40px auto;padding:0 20px;color:#10201E}h1,h2{font-family:Arial,sans-serif;color:#0B6E79}table{border-collapse:collapse;width:100%;margin:12px 0;font:13px Arial,sans-serif}th,td{border:1px solid #D3DDDA;padding:6px 8px;text-align:right}th:first-child,td:first-child{text-align:left}th{background:#E8EFED}</style></head><body>
+<h1>CarbonSetu: investor report</h1><p>Group 1 · Carbon Finance, IIM Ahmedabad · prepared from the CarbonSetu website, ${new Date().toISOString().slice(0,10)}</p>
+<h2>The opportunity</h2><p>Since 1 January 2026, EU importers of Indian steel, aluminium, cement and fertilisers pay for embedded carbon under CBAM. India exported €5.30 bn of these goods to the EU in 2025. On our estimates, CBAM takes 6.6% of JSW Steel's EBITDA in 2030 on verified data and 19.4% on EU default values. Lenders, buyers and producers have no rating that shows this.</p>
+<h2>The product</h2><p>A Sustainability Index Score (0–100) and EBITDA-at-Risk in rupees to 2034 for every firm in CBAM sectors, listed or unlisted, with a confidence tier on each score. Claude extracts figures from BRSR and credit-rating reports with page references; n8n refreshes carbon prices and filings.</p>
+<h2>Pricing</h2>${t(["Customer","Annual price"],[["Banks, NBFCs, funds","₹12 lakh"],["EU importers","€6,000"],["Indian producers","₹3 lakh"],["Government, think tanks","₹5 lakh"]])}
+<h2>Five-year plan (₹ crore)</h2>${t(["",...INV_YEARS],[["Firms rated",...R.map(r=>inr0.format(r.rated))],["Paying customers",...R.map(r=>r.cust.banks+r.cust.importers+r.cust.producers+r.cust.govt)],["Revenue",...R.map(r=>L(r.revenue))],["Costs",...R.map(r=>L(r.cost))],["EBITDA",...R.map(r=>L(r.ebitda))],["Cumulative cash",...R.map(r=>L(r.cum))]])}
+<h2>The ask</h2><p>₹${inr0.format(invPlan.ask/100)} crore seed funding, covering the peak cash need with a 25% buffer${invPlan.be?`; EBITDA break-even in ${invPlan.be.yr}`:""}.</p>
+<h2>Risks</h2><ul><li>SEBI may treat paid scores on listed firms as ESG ratings; we will register or partner with a registered ESG Rating Provider.</li><li>EU rules may change (a proposal would slow the phase-in to 2038).</li><li>Firm-level EU volumes are not disclosed; we estimate them and show a confidence tier.</li></ul>
+<p style="font-size:12px;color:#5F716E">All figures are planning assumptions for an academic project. Not investment advice.</p></body></html>`; }
+function initInvestor(){
+  ["#i-scen","#i-price","#i-fte","#i-ai"].forEach(s=>$(s).addEventListener("input",renderInvestor));
+  const save=async(name,data)=>{ try{ await DL.save({filename:name,data}); $("#i-dlNote").textContent="Saved."; }catch(e){ $("#i-dlNote").textContent=e&&e.code==="declined"?"Download cancelled.":"Download isn't available here."; } };
+  $("#i-dlReport").addEventListener("click",()=>save("CarbonSetu_investor_report.html",planReport()));
+  $("#i-dlCsv").addEventListener("click",()=>save("CarbonSetu_five_year_plan.csv",planCsv()));
+}
+function initCapabilities(){
+  if(!window.claude||!window.claude.use) { $("#x-engineNote").textContent="Claude isn't available in this view. The offline extractor works on standard BRSR wording."; return; }
+  window.claude.use("sample").then(s=>{ SAMPLE=s||null; if(!s) $("#x-engineNote").textContent="Claude isn't available in this view. The offline extractor works on standard BRSR wording."; }).catch(()=>{});
+  window.claude.use("downloads").then(d=>{ DL=d||null; if(d){ $("#i-dlReport").hidden=false; $("#i-dlCsv").hidden=false; } }).catch(()=>{});
+}
+
+/* ---------------- ROUTER ---------------- */
+const VIEWS=["home","dashboard","calculator","extract","policy","investor","learn","method","firm"];
+const TITLES={home:"CarbonSetu",dashboard:"Dashboard · CarbonSetu",calculator:"Rate a company · CarbonSetu",policy:"Policy simulator · CarbonSetu",learn:"Learn · CarbonSetu",method:"Method & sources · CarbonSetu",extract:"AI extraction · CarbonSetu",investor:"Investor case · CarbonSetu"};
+let current=null;
+function route(){
+  const h=(location.hash||"#home").slice(1); let v=h, arg=null;
+  if(h.startsWith("firm-")){ v="firm"; arg=h.slice(5); if(!FIRMS.some(f=>f.id===arg)){ location.replace("#dashboard"); return; } }
+  if(v==="plans") v="investor";
+  if(!VIEWS.includes(v)) { if(document.getElementById(h)) return; v="home"; }
+  const shown = v==="firm" ? "dashboard" : v;
+  const baseWasDash = current==="dashboard"||current==="firm";
+  VIEWS.forEach(x=>{ const s=$("#v-"+x); if(s) s.hidden = x!==shown; });
+  $$(".nav a").forEach(a=>{ const t=a.getAttribute("href").slice(1); if(t===shown) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  $("#siteNav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
+  if(shown==="dashboard" && !baseWasDash) renderDash();
+  if(v==="calculator") renderCalc();
+  if(v==="policy") renderPolicy();
+  if(v==="investor") renderInvestor();
+  if(v==="firm") openDrawer(arg); else closeDrawer();
+  document.title = v==="firm" ? ((FIRMS.find(f=>f.id===arg)||{}).name||"Firm")+" · CarbonSetu" : TITLES[v];
+  if(current!==null && v!=="firm" && !(v==="dashboard"&&current==="firm")){ window.scrollTo(0,0); const hd=$("#v-"+v+" h1"); if(hd){ hd.setAttribute("tabindex","-1"); hd.focus({preventScroll:true}); } }
+  current=v;
+}
+function rerenderVisible(){ if(current==="dashboard"||current==="firm"){ renderDash(); if(current==="firm"&&drawerId) renderFirm(drawerId); } else if(current==="calculator") renderCalc(); else if(current==="policy") renderPolicy(); else if(current==="investor") renderInvestor(); }
+
+/* ---------------- INIT ---------------- */
+$("#menuBtn").addEventListener("click",()=>{ const n=$("#siteNav"); const o=n.classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded",o); if(o) n.querySelector("a").focus(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#siteNav").classList.contains("open")){ $("#siteNav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); $("#menuBtn").focus(); } });
+$("#themeBtn").addEventListener("click",()=>{ const r=document.documentElement; const dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches; r.dataset.theme = dark?"light":"dark"; store("cs-theme",r.dataset.theme); rerenderVisible(); });
+const saved=store("cs-theme"); if(saved==="dark"||saved==="light") document.documentElement.dataset.theme=saved;
+renderRuler(); initDash(); initDrawer(); initCalc(); initPolicy(); initLearn(); initMethod(); initExtract(); initInvestor(); initCapabilities();
+$("#openUnlisted").addEventListener("click",()=>{ setCalc(UNLISTED); $("#sampleFlag").hidden=false; $("#sampleFlag").textContent="● Illustrative unlisted exporter loaded (not a real company)"; location.hash="calculator"; });
+["#o-default","#o-rebate","#o-prog"].forEach(q=>$(q).addEventListener("input",renderOptions));
+window.addEventListener("hashchange",route);
+let rz; window.addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(rerenderVisible,150); });
+route();
+})();
+</script>
+
+</body>
+</html>
