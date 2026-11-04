@@ -6,11 +6,11 @@ CarbonSetu rates Indian firms in EU CBAM sectors (steel, aluminium, cement, fert
 **Sustainability Index Score (0–100)** and estimates **CBAM EBITDA-at-Risk** from 2026 to 2034.
 
 ## What's in the site (`index.html`)
-- **Dashboard** – 8 listed firms ranked, with a scenario bar (EU price path, data basis, phase-out rule,
+- **Dashboard** – 22 firms ranked (6 steel, 4 aluminium, 6 cement, 6 fertilisers), with a scenario bar (EU price path, data basis, phase-out rule,
   stress test, ₹ crore / € million), a "View as" lens (lender, EU importer, producer, government),
   and a slide-over deep-dive for each firm with a benchmark ruler.
-- **Rate a company** – calculator for any firm, including unlisted exporters with confidence tiers.
-- **AI extraction** – BRSR Principle 6 extraction. Live Claude extraction only works when the page is opened
+- **Tools** – CBAM cost calculator with what-if scenarios, decarbonisation optimiser (capex, payback, IRR), compliance tracker with AI assistant, supplier finder for EU importers, lender credit risk, peer benchmarking with an efficiency frontier.
+- **AI extraction** – BRSR Principle 6 extraction. Live AI extraction only works when the page is opened
   inside claude.ai; everywhere else the built-in offline extractor and the "Instant demo replay" are used.
 - **Policy simulator**, **Investor case** (five-year plan), **Learn** and **Method & sources**.
 
