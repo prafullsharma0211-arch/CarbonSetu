@@ -700,7 +700,7 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
         <div class="legend" aria-label="Index score bar segments"><span><i class="pc1"></i>Emissions 35%</span><span><i class="pc2"></i>Transition 25%</span><span><i class="pc3"></i>Disclosure 20%</span><span><i class="pc4"></i>Efficiency 20%</span></div>
       </div>
       <div class="table-wrap"><table id="firmTable" aria-describedby="tableCap"><caption class="sr-only" id="tableCap">Sustainability Index Score, tier and CBAM cost by firm. Column headers sort the table.</caption></table></div>
-      <p class="note" style="margin-top:var(--sp-3)">Click a firm for its deep-dive. "vs EU benchmark" compares the firm's emissions per tonne with the EU benchmark for its production route. €/t is the certificate cost on each tonne sold to the EU, shown even for firms that export none today. EU volumes are CarbonSetu estimates; no firm reports them. Tier A ● company-reported and assured · B ◐ partly reported · C ○ mostly estimated.</p>
+      <p class="note" style="margin-top:var(--sp-3)">Click a firm for its deep-dive. "vs EU benchmark" compares the firm's emissions per tonne with the EU benchmark for its production route. ₹/t is the certificate cost on each tonne sold to the EU, shown even for firms that export none today. EU volumes are CarbonSetu estimates; no firm reports them. Tier A ● company-reported and assured · B ◐ partly reported · C ○ mostly estimated.</p>
     </div>
   </div>
 </section>
@@ -1585,16 +1585,16 @@ function lensView(fs,st){
     const pool=(ex.length?ex:fs).filter(f=>f.sector===sec);
     const pt=pool.map(f=>({f,v:perTonne(f,{...st,basis:"verified"},Y),dv:perTonne(f,{...st,basis:"default"},Y)})).sort((a,b)=>a.v-b.v);
     const best=pt[0];
-    return {kpis:[[`Cheapest ${sec?sec.toLowerCase():""} tonne, ${Y}`,best?"€"+eur0.format(best.v):"–",best?best.f.name+" · verified data":""],
-      ["Same tonne on India's default",best?"€"+eur0.format(best.dv):"–","what an unverified supplier costs"],
-      ["Saving per tonne from verified data",best?"€"+eur0.format(Math.max(0,best.dv-best.v)):"–","default minus verified"],K.fa],
-      note: best? `<strong>For an EU importer.</strong> Among ${sec.toLowerCase()} suppliers in view, each tonne of ${PRODUCTS[best.f.product].label.split(" · ")[0].toLowerCase()} from ${esc(best.f.name)} carries about €${eur0.format(best.v)} of CBAM certificates in ${Y} on its verified data. If the supplier can't provide verified installation data, the same tonne is charged at India's default value: about €${eur0.format(best.dv)}. Ask suppliers for verified data before your first annual declaration in 2027, and write it into contracts.` : ""};
+    return {kpis:[[`Cheapest ${sec?sec.toLowerCase():""} tonne, ${Y}`,best?rpt(best.v):"–",best?best.f.name+" · verified data":""],
+      ["Same tonne on India's default",best?rpt(best.dv):"–","what an unverified supplier costs"],
+      ["Saving per tonne from verified data",best?rpt(Math.max(0,best.dv-best.v)):"–","default minus verified"],K.fa],
+      note: best? `<strong>For an EU importer.</strong> Among ${sec.toLowerCase()} suppliers in view, each tonne of ${PRODUCTS[best.f.product].label.split(" · ")[0].toLowerCase()} from ${esc(best.f.name)} carries about ${rpt(best.v)} of CBAM certificates in ${Y} on its verified data. If the supplier can't provide verified installation data, the same tonne is charged at India's default value: about ${rpt(best.dv)}. Ask suppliers for verified data before your first annual declaration in 2027, and write it into contracts.` : ""};
   }
   if(p==="producer"){
     const ds=fs.map(f=>({f,b:bmDelta(f,st)})).filter(o=>o.b).sort((a,b)=>a.b.d-b.b.d);
     const c=ds[0];
     return {kpis:[K.saving,["Closest to its EU benchmark",c?(c.b.d>0?"+":"−")+Math.abs(Math.round(c.b.d))+"%":"–",c?c.f.name:"no disclosed intensity in view"],K.fa,K.avg],
-      note:`<strong>For a producer.</strong> Verified installation data is worth ${mcr(saving)} to these firms over 2026–34, because without it the EU charges India's default value plus a mark-up. After that, every 0.1 tCO₂e/t cut saves about €${eur0.format(0.1*PRICE[st.price][Y])} per exported tonne in ${Y}. Test a cut in <a href="#calculator">CBAM cost calculator</a>.`};
+      note:`<strong>For a producer.</strong> Verified installation data is worth ${mcr(saving)} to these firms over 2026–34, because without it the EU charges India's default value plus a mark-up. After that, every 0.1 tCO₂e/t cut saves about ${rpt(0.1*PRICE[st.price][Y])} per exported tonne in ${Y}. Test a cut in <a href="#calculator">CBAM cost calculator</a>.`};
   }
   if(p==="govt"){
     const sum=fs.reduce((a,f)=>a+YEARS.reduce((s,y)=>s+firmRun(f,st,y).cr,0),0);
@@ -1647,7 +1647,7 @@ function spark(vals,max){ const w=84,h=24; const m=Math.max(max||0,...vals,1e-4)
 let tableOrder=[];
 function renderFirmTable(){
   const st=dash, y=st.year; const cols=[
-    {k:"name",h:"Firm"},{k:"sector",h:"Sector"},{k:"score",h:"Index score"},{k:"tier",h:"Tier"},{k:"delta",h:"vs EU benchmark",n:1},{k:"cr",h:`CBAM ${y}`,n:1},{k:"pct",h:`% EBITDA ${y}`,n:1},{k:"perT",h:`€/t ${y}`,n:1},{k:"trend",h:"2026 → 2034"},{k:null,h:"Source"}];
+    {k:"name",h:"Firm"},{k:"sector",h:"Sector"},{k:"score",h:"Index score"},{k:"tier",h:"Tier"},{k:"delta",h:"vs EU benchmark",n:1},{k:"cr",h:`CBAM ${y}`,n:1},{k:"pct",h:`% EBITDA ${y}`,n:1},{k:"perT",h:`₹/t ${y}`,n:1},{k:"trend",h:"2026 → 2034"},{k:null,h:"Source"}];
   let rows=dashFirms().map(f=>{ const r=firmRun(f,st,y); const peers=FIRMS.filter(p=>p.sector===f.sector).sort((a,b)=>score(b).total-score(a).total); const bd=bmDelta(f,st);
     const trend=YEARS.map(yy=>firmRun(f,st,yy).pct);
     return {f,bd,trend,srank:peers.indexOf(f)+1,npeers:peers.length,name:f.name,sector:f.sector,score:score(f).total,tier:f.tier,cr:r.cr,pct:r.pct,perT:perTonne(f,st,y),delta:bd?bd.d:1e9,trendK:trend[8]}; });
@@ -1661,7 +1661,7 @@ function renderFirmTable(){
       <td class="n">${r.bd?`<span class="num">${r.bd.v.toFixed(2)}</span> <span class="delta ${r.bd.d>0?"over":"under"}" title="EU benchmark ${r.bd.bm} tCO₂e/t (${r.f.route})">${r.bd.d>0?"+":"−"}${Math.abs(Math.round(r.bd.d))}%</span>`:`<span class="note">${r.f.bmProxy?"Stainless: no like-for-like benchmark":"Not disclosed"}</span>`}</td>
       <td class="n">${r.f.eu?mcr(r.cr):"–"}</td>
       <td class="n"><div class="pctcell">${r.f.eu?`<span class="num">${pct(r.pct)}</span>`:""}${riskPill(r.pct,r.f.eu)}</div></td>
-      <td class="n num">€${eur0.format(r.perT)}</td>
+      <td class="n num">${rpt(r.perT)}</td>
       <td>${r.f.eu?`<div class="trendcell">${spark(r.trend,tmax)}<span class="num note">${pct(r.trend[0])} → ${pct(r.trend[8])}</span></div>`:`<span class="note">No EU sales</span>`}</td>
       <td><a class="pill src" href="${r.f.src[0][1]}" target="_blank" rel="noopener" title="${esc(r.f.src[0][0])}" aria-label="Source for ${esc(r.name)}: ${esc(r.f.src[0][0])} (opens in a new tab)">${/BRSR/i.test(r.f.src[0][0])?"BRSR":/ESG|SLB|sustainab/i.test(r.f.src[0][0])?"ESG report":"Filing"} ↗</a></td></tr>`).join("")}</tbody>`;
   $$("#firmTable button.sort").forEach(b=>b.addEventListener("click",()=>{ const k=b.dataset.k; dash.sort = dash.sort.k===k? {k,dir:-dash.sort.dir}:{k,dir:(k==="name"||k==="sector"||k==="tier"||k==="delta"||k==="perT")?1:-1}; renderFirmTable(); const nb=$(`#firmTable button.sort[data-k="${k}"]`); if(nb) nb.focus(); }));
