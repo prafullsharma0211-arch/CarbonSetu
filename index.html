@@ -160,7 +160,7 @@ main{display:block;overflow-x:clip}
 @media (max-width:599px){ .aud{grid-template-columns:1fr} }
 
 /* controls */
-.toolbar{display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-5);align-items:flex-end;padding:var(--sp-4) var(--sp-5);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);position:sticky;top:calc(env(safe-area-inset-top,0px) + 61px);z-index:5}
+.toolbar{display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-5);align-items:flex-end;padding:var(--sp-4) var(--sp-5);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2)}
 @media (max-width:1023px){ .toolbar{position:static} }
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field>label,.field>.lbl{font-size:var(--t-xs);font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
@@ -646,8 +646,8 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
       <div class="row1">
         <div class="field"><span class="lbl" id="lbl-sector">Sector</span><div class="chips" role="group" aria-labelledby="lbl-sector" id="sectorChips"></div></div>
         <div class="field"><label for="d-year">Year</label><select id="d-year"></select></div>
-        <div class="field"><label for="d-price">EU carbon price</label><select id="d-price"><option value="low">Low (€80 in 2030)</option><option value="base" selected>Base (€126 in 2030)</option><option value="high">High (€147 in 2030)</option></select></div>
-        <div class="field"><label for="d-basis">Emissions data</label><select id="d-basis"><option value="verified" selected>Verified / reported</option><option value="default">EU default values</option></select></div>
+        <div class="field"><label for="d-price">EU carbon price</label><select id="d-price"><option value="low">Low path</option><option value="base" selected>Base path</option><option value="high">High path</option></select></div>
+        <div class="field"><label for="d-basis">Emissions data</label><select id="d-basis"><option value="verified" selected>Own reported data (if verified)</option><option value="default">EU default values</option></select></div>
         <div class="field"><label for="d-rule">Phase-out rule</label><select id="d-rule"><option value="law" selected>Current law (to 2034)</option><option value="prop">Proposal (to 2038)</option></select></div>
         <div class="field"><span class="lbl" id="lbl-cur">Money in</span><div class="seg" role="group" aria-labelledby="lbl-cur" id="curSeg"><button type="button" data-c="inr" aria-pressed="true">₹ crore</button><button type="button" data-c="eur" aria-pressed="false">€ million</button></div></div>
         <label class="switch" for="d-stress"><input type="checkbox" id="d-stress"> Add indirect emissions (stress test)</label>
@@ -1034,9 +1034,10 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
       <div class="field"><label for="s-price">EU price</label><select id="s-price"><option value="low">Low</option><option value="base" selected>Base</option><option value="high">High</option></select></div>
       <div class="field" style="min-width:180px"><label for="s-max">Max intensity <span class="num" id="sMaxOut"></span></label><input type="range" id="s-max" min="0" max="5" step="0.05" value="5"></div>
       <div class="field"><label for="s-grade">Minimum readiness</label><select id="s-grade"><option value="D" selected>Any</option><option value="C">C or better</option><option value="B">B or better</option><option value="A">A only</option></select></div>
-      <label class="switch" for="s-ver"><input type="checkbox" id="s-ver"> Verified data only</label>
+      <label class="switch" for="s-ver"><input type="checkbox" id="s-ver"> BRSR-assured data only</label>
+      <label class="switch" for="s-assume"><input type="checkbox" id="s-assume"> Assume suppliers get CBAM-verified</label>
     </form>
-    <div class="chart-card" style="margin-top:var(--sp-5)"><header><div><h3>Suppliers ranked by expected CBAM cost</h3><p>Expected cost uses the supplier's own data if it is reported or verified, and India's default value if it is only estimated</p></div></header><div class="table-wrap" id="s-table"></div></div>
+    <div class="chart-card" style="margin-top:var(--sp-5)"><header><div><h3>Suppliers ranked by expected CBAM cost</h3><p>No Indian installation has CBAM-verified emissions yet: the first verified reports come with the 2026 declarations in 2027. Until a supplier's data is verified by an accredited verifier, the importer pays on India's default value, so that is the expected cost. Tick "Assume suppliers get CBAM-verified" to see the cost on their own reported data.</p></div></header><div class="table-wrap" id="s-table"></div></div>
     <div class="chart-card" style="margin-top:var(--sp-5)"><header><div><h3>Compare two suppliers</h3><p>Add each supplier's quoted price to see the cost including CBAM</p></div></header>
       <div class="toolbar" style="position:static;padding:0;border:0">
         <div class="field"><label for="s-a">Supplier A</label><select id="s-a"></select></div><div class="field"><label for="s-pa">A's price (₹ per tonne)</label><input type="number" id="s-pa" min="0" step="500" inputmode="numeric"></div>
@@ -1045,7 +1046,7 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
       <div class="table-wrap" id="s-compare" style="margin-top:var(--sp-3)"></div>
       <p class="callout teal" id="s-verdict"></p>
     </div>
-    <p class="note" style="margin-top:var(--sp-4)">Readiness grade from the Sustainability Index Score: A 75+, B 60–74, C 45–59, D below 45. Commercial model: premium supplier listings and buyer–supplier introductions (see the Investor case). Default quoted prices are placeholders; enter real quotes.</p>
+    <p class="note" style="margin-top:var(--sp-4)">Jindal Stainless is left out of the hot-rolled steel list: stainless steel has its own CN codes and benchmarks. Readiness grade from the Sustainability Index Score: A 75+, B 60–74, C 45–59, D below 45. Commercial model: premium supplier listings and buyer–supplier introductions (see the Investor case). Default quoted prices are placeholders; enter real quotes.</p>
   </div>
 </section>
 
@@ -1097,7 +1098,7 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
       <div class="field"><label for="pe-sector">Sector</label><select id="pe-sector"></select></div>
       <div class="field"><label for="pe-focus">Your company</label><select id="pe-focus"></select></div>
     </form>
-    <div class="chart-card" style="margin-top:var(--sp-5)"><header><div><h3>Peer table</h3><p>Green marks the sector leader on each metric; n/d means not disclosed</p></div></header><div class="table-wrap" id="pe-table"></div></div>
+    <div class="chart-card" style="margin-top:var(--sp-5)"><header><div><h3>Peer table</h3><p>Green marks the sector leader on each metric; n/d means not disclosed</p></div></header><div class="table-wrap" id="pe-table"></div><p class="note">* Jindal Stainless makes stainless steel in electric arc furnaces from scrap and ferro-alloys, not iron ore in blast furnaces, so its 1.53 t (direct, derived from its FY25 Scope 1 of 3.00 Mt) is not comparable with carbon-steel makers and is not counted as the leader. Its reported Scope 1 + 2 intensity is 1.85 t.</p></div>
     <div class="grid-12" style="margin-top:var(--sp-5)">
       <div class="span-8 chart-card"><header><div><h3>Carbon-efficiency frontier</h3><p>Green line: the lowest emissions per tonne achieved at each scale of output. Green dots are on the frontier.</p></div></header><div class="chart" id="c-frontier" role="img"></div><p class="note" id="pe-frontNote"></p></div>
       <div class="span-4 chart-card"><header><div><h3>Gaps to the leader</h3><p>For the company you picked</p></div></header><ul class="checklist" id="pe-gaps"></ul></div>
@@ -1231,7 +1232,7 @@ input.cell{width:70px;padding:6px 8px;font:500 var(--t-sm)/1 var(--f-data);text-
 
 <footer class="site-foot" role="contentinfo">
   <div class="wrap">
-    <div class="stack"><strong style="font-family:var(--f-display);color:var(--ink)">CarbonSetu</strong><p>Group 1 · Carbon Finance, IIM Ahmedabad, Term V 2026-27. Prototype for discussion; figures are estimates, not investment advice.</p></div>
+    <div class="stack"><strong style="font-family:var(--f-display);color:var(--ink)">CarbonSetu</strong><p>Figures are estimates, not investment advice.</p></div>
     <nav aria-label="Footer"><a href="#dashboard">Dashboard</a><a href="#calculator">CBAM cost calculator</a><a href="#extract">AI extraction</a><a href="#policy">Policy simulator</a></nav>
     <nav aria-label="Footer resources"><a href="#investor">Investor case</a><a href="#learn">Learn</a><a href="#method">Method &amp; sources</a></nav>
   </div>
@@ -1820,6 +1821,7 @@ function initCalc(){
   $("#calcForm").addEventListener("input",()=>{ $("#sampleFlag").hidden=true; renderCalc(); });
   $("#calcForm").addEventListener("change",renderCalc);
   $("#calcForm").addEventListener("submit",e=>e.preventDefault());
+  ["#c-cut","#c-year","#w-price","#w-cut","#w-india","#w-bm"].forEach(q=>$(q).addEventListener("input",renderCalc));
   $("#resetCalc").addEventListener("click",()=>{ setCalc(EXAMPLE); $("#sampleFlag").hidden=false; $("#sampleFlag").textContent="● Example loaded: an unlisted steel exporter"; renderCalc(); });
 }
 
@@ -2199,7 +2201,7 @@ const rptE=eur=>`${rpt(eur)} <span class="note">(€${eur0.format(eur)})</span>`
 const crN=v=>"₹"+inr1.format(v)+" cr";
 function grade(s){ return s>=75?"A":s>=60?"B":s>=45?"C":"D"; }
 function gradePill(s){ const g=grade(s); return `<span class="grade g${g}" title="Readiness grade from the Sustainability Index Score">${g}</span>`; }
-const VERIF={A:["Verified (assured)","High","low"],B:["Reported, not assured","Medium","mod"],C:["Estimated","Low","high"]};
+const VERIF={A:["BRSR-assured, not CBAM-verified","Medium","mod"],B:["Reported, not assured","Low","high"],C:["Estimated","Very low","sev"]};
 function verifPill(t){ const v=VERIF[t]; return `<span class="pill ${v[2]}"><span class="dot" aria-hidden="true"></span>${v[0]}</span>`; }
 function firmCbamObj(f,extra){ const P=PRODUCTS[f.product]; return Object.assign({sector:f.sector,bm:P.routes[f.route],dflt:P.dflt,see:f.see==null?P.dflt:f.see,ind:f.ind,vol:f.eu,price:"base",rule:"law",india:0,pass:1},extra||{}); }
 function kpiHTML(list){ return list.map(k=>`<div class="kpi"><span class="k">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${k[2]||""}</span></div>`).join(""); }
@@ -2442,9 +2444,9 @@ function initComply(){
 const SUP_SECTOR={hrc:"Steel",alu:"Aluminium",cem:"Cement",urea:"Fertilisers"};
 function supRows(){
   const prod=$("#s-prod").value, sector=SUP_SECTOR[prod], Y=+$("#s-year").value, qty=num("#s-qty",0), price=$("#s-price").value;
-  return FIRMS.filter(f=>f.sector===sector).map(f=>{ const P=PRODUCTS[f.product]; const o=firmCbamObj(f,{vol:1,price});
+  return FIRMS.filter(f=>f.sector===sector&&!f.bmProxy).map(f=>{ const P=PRODUCTS[f.product]; const o=firmCbamObj(f,{vol:1,price});
     const act=f.see==null?null:cbam(o,Y).perT, def=cbam({...o,useDefault:true},Y).perT;
-    const exp= f.tier==="C"||act==null ? def : act; const s=score(f).total;
+    const assume=$("#s-assume").checked; const exp= (!assume||f.tier==="C"||act==null) ? def : act; const s=score(f).total;
     return {f,P,int:f.see,act,def,exp,s,g:grade(s),orderCr:exp*qty*EURINR/1e7}; });
 }
 function renderSuppliers(){
@@ -2452,18 +2454,20 @@ function renderSuppliers(){
   const sector=SUP_SECTOR[$("#s-prod").value]; const g=GAUGE[sector]; $("#s-max").max=g.max; if(+$("#s-max").value>g.max) $("#s-max").value=g.max;
   $("#sMaxOut").textContent=(+$("#s-max").value).toFixed(2)+" t";
   const order="ABCD";
-  let rows=supRows().filter(r=>(r.int==null?PRODUCTS[r.f.product].dflt:r.int)<=+$("#s-max").value+1e-9 && (!needV||r.f.tier==="A") && order.indexOf(r.g)<=order.indexOf(minG)).sort((a,b)=>a.exp-b.exp);
+  let rows=supRows().filter(r=>(r.int==null?PRODUCTS[r.f.product].dflt:r.int)<=+$("#s-max").value+1e-9 && (!needV||r.f.tier==="A") && order.indexOf(r.g)<=order.indexOf(minG)).sort((a,b)=>a.exp-b.exp||(((a.f.tier==="C"?null:a.act)??1e9)-((b.f.tier==="C"?null:b.act)??1e9)));
   const worst=Math.max(0,...rows.map(r=>r.orderCr));
-  $("#s-table").innerHTML=rows.length?`<table><caption class="sr-only">Indian suppliers ranked by expected CBAM cost</caption><thead><tr><th scope="col">Supplier</th><th class="n" scope="col">Carbon intensity</th><th class="n" scope="col">CBAM cost per t, ${Y}</th><th class="n" scope="col">If default applies</th><th class="n" scope="col">Your order (${inr0.format(qty)} t)</th><th scope="col">Verification</th><th scope="col">Readiness</th><th scope="col">Data confidence</th></tr></thead><tbody>${
-    rows.map(r=>`<tr><td><a class="firm-link" href="#firm-${r.f.id}">${esc(r.f.name)}</a>${r.f.eu?"":'<br><span class="note">No EU sales today</span>'}</td><td class="n num">${r.int==null?'<span class="note">Not disclosed</span>':r.int.toFixed(2)+" t"}</td><td class="n">${rptE(r.exp)}</td><td class="n num">${rpt(r.def)}</td><td class="n num">${crN(r.orderCr)}${worst>r.orderCr?`<br><span class="note">saves ${crN(worst-r.orderCr)}</span>`:""}</td><td>${verifPill(r.f.tier)}</td><td>${gradePill(r.s)} <span class="num note">${Math.round(r.s)}</span></td><td>${VERIF[r.f.tier][1]}</td></tr>`).join("")}</tbody></table>`:'<p class="note" style="padding:16px">No supplier meets these filters. Loosen the intensity cap or the readiness grade.</p>';
+  $("#s-table").innerHTML=rows.length?`<table><caption class="sr-only">Indian suppliers ranked by expected CBAM cost</caption><thead><tr><th scope="col">Supplier</th><th class="n" scope="col">Carbon intensity</th><th class="n" scope="col">Expected CBAM cost per t, ${Y}</th><th class="n" scope="col">If CBAM-verified</th><th class="n" scope="col">Your order (${inr0.format(qty)} t)</th><th scope="col">Data status</th><th scope="col">Readiness</th><th scope="col">Data confidence</th></tr></thead><tbody>${
+    rows.map(r=>`<tr><td><a class="firm-link" href="#firm-${r.f.id}">${esc(r.f.name)}</a>${r.f.eu?"":'<br><span class="note">No EU sales today</span>'}</td><td class="n num">${r.int==null?'<span class="note">Not disclosed</span>':r.int.toFixed(2)+" t"}</td><td class="n">${rptE(r.exp)}</td><td class="n num">${r.act==null||r.f.tier==="C"?'<span class="note">needs own data</span>':rpt(r.act)}</td><td class="n num">${crN(r.orderCr)}${worst-r.orderCr>0.05?`<br><span class="note">saves ${crN(worst-r.orderCr)}</span>`:""}</td><td>${verifPill(r.f.tier)}</td><td>${gradePill(r.s)} <span class="num note">${Math.round(r.s)}</span></td><td>${VERIF[r.f.tier][1]}</td></tr>`).join("")}</tbody></table>`:'<p class="note" style="padding:16px">No supplier meets these filters. Loosen the intensity cap or the readiness grade.</p>';
   // compare
   const all=supRows(); const a=all.find(r=>r.f.id===$("#s-a").value)||all[0], b=all.find(r=>r.f.id===$("#s-b").value)||all[1]||all[0];
   const qa=num("#s-pa",0), qb=num("#s-pb",0);
   const landed=(r,q)=>q+r.exp*EURINR;
-  const lines2=[["Carbon intensity",r=>r.int==null?"Not disclosed":r.int.toFixed(2)+" tCO₂e/t"],["Estimated CBAM cost per tonne",r=>rptE(r.exp)],["Verification status",r=>VERIF[r.f.tier][0]],["Readiness rating",r=>`${r.g} (${Math.round(r.s)}/100)`],["Data confidence",r=>VERIF[r.f.tier][1]],["Quoted price per tonne",(r,q)=>"₹"+inr0.format(q)],["Price + CBAM per tonne",(r,q)=>"<b>₹"+inr0.format(landed(r,q))+"</b>"],[`Order total, ${inr0.format(qty)} t`,(r,q)=>crN(landed(r,q)*qty/1e7)]];
+  const lines2=[["Carbon intensity",r=>r.int==null?"Not disclosed":r.int.toFixed(2)+" tCO₂e/t"],["Estimated CBAM cost per tonne",r=>rptE(r.exp)],["Data status",r=>VERIF[r.f.tier][0]],["Readiness rating",r=>`${r.g} (${Math.round(r.s)}/100)`],["Data confidence",r=>VERIF[r.f.tier][1]],["Quoted price per tonne",(r,q)=>"₹"+inr0.format(q)],["Price + CBAM per tonne",(r,q)=>"<b>₹"+inr0.format(landed(r,q))+"</b>"],[`Order total, ${inr0.format(qty)} t`,(r,q)=>crN(landed(r,q)*qty/1e7)]];
   $("#s-compare").innerHTML=`<table><thead><tr><th scope="col">Parameter</th><th scope="col" class="n">${esc(a.f.name)}</th><th scope="col" class="n">${esc(b.f.name)}</th></tr></thead><tbody>${lines2.map(([l,fn])=>`<tr><td>${l}</td><td class="n">${fn(a,qa)}</td><td class="n">${fn(b,qb)}</td></tr>`).join("")}</tbody></table>`;
   const d=landed(a,qa)-landed(b,qb);
-  $("#s-verdict").innerHTML=`<strong>${d<0?esc(a.f.name):esc(b.f.name)} is cheaper by ₹${inr0.format(Math.abs(d))} a tonne</strong> once CBAM is added, or ${crN(Math.abs(d)*qty/1e7)} on this order. ${a.f.tier!=="A"||b.f.tier!=="A"?"A supplier without verified data is priced at the default value: ask for a verified emissions report before contracting.":""}`;
+  const va=a.act==null||a.f.tier==="C"?null:a.act, vb=b.act==null||b.f.tier==="C"?null:b.act;
+  if(Math.abs(d)<0.5){ $("#s-verdict").innerHTML=`<strong>Same CBAM cost today: ${rpt(a.exp)} a tonne on India's default value.</strong> The gap only opens once a supplier is CBAM-verified: ${esc(a.f.name)} ${va==null?"has no usable data yet":"would pay "+rpt(va)}, ${esc(b.f.name)} ${vb==null?"has no usable data yet":"would pay "+rpt(vb)}. Ask each for a verified emissions report before contracting.`; return; }
+  $("#s-verdict").innerHTML=`<strong>${d<0?esc(a.f.name):esc(b.f.name)} is cheaper by ₹${inr0.format(Math.abs(d))} a tonne</strong> once CBAM is added, or ${crN(Math.abs(d)*qty/1e7)} on this order. ${$("#s-assume").checked?"This assumes both suppliers get their reported data CBAM-verified before you declare.":"Neither supplier has CBAM-verified data yet, so both are priced at India's default value. Ask for a verified emissions report before contracting."}`;
 }
 function initSuppliers(){
   const fill=()=>{ const sector=SUP_SECTOR[$("#s-prod").value]; const fs=FIRMS.filter(f=>f.sector===sector);
@@ -2473,7 +2477,7 @@ function initSuppliers(){
     const pr={hrc:52000,alu:245000,cem:5200,urea:38000}[$("#s-prod").value]; $("#s-pa").value=pr; $("#s-pb").value=pr; };
   $("#s-year").innerHTML=YEARS.map(y=>`<option${y===2027?" selected":""}>${y}</option>`).join("");
   fill(); $("#s-prod").addEventListener("change",()=>{ fill(); renderSuppliers(); });
-  ["#s-qty","#s-year","#s-max","#s-ver","#s-grade","#s-a","#s-b","#s-pa","#s-pb","#s-price"].forEach(s=>$(s).addEventListener("input",renderSuppliers));
+  ["#s-qty","#s-year","#s-max","#s-ver","#s-assume","#s-grade","#s-a","#s-b","#s-pa","#s-pb","#s-price"].forEach(s=>$(s).addEventListener("input",renderSuppliers));
 }
 
 /* ================= F. CREDIT RISK FOR LENDERS ================= */
@@ -2542,9 +2546,9 @@ function renderPeers(){
     {h:"Output (Mt)",v:f=>f.prod??null,fmt:v=>inr1.format(v),best:null},
     {h:"CBAM, % EBITDA 2030",v:f=>f.eu?firmRun(f,st,2030).pct:0,fmt:v=>pct(v),best:"min"},
     {h:"Index score",v:f=>score(f).total,fmt:v=>Math.round(v)+"",best:"max"}];
-  const bestOf=c=>{ const vals=fs.map(c.v).filter(v=>v!=null); if(!vals.length||!c.best) return null; return c.best==="min"?Math.min(...vals):Math.max(...vals); };
+  const bestOf=c=>{ const vals=fs.filter(f=>!(f.bmProxy&&c.h==="Emissions per tonne")).map(c.v).filter(v=>v!=null); if(!vals.length||!c.best) return null; return c.best==="min"?Math.min(...vals):Math.max(...vals); };
   const bests=cols.map(bestOf);
-  $("#pe-table").innerHTML=`<table><caption class="sr-only">${sector} peers compared</caption><thead><tr><th scope="col">Firm</th>${cols.map(c=>`<th scope="col" class="n">${c.h}</th>`).join("")}</tr></thead><tbody>${fs.map(f=>`<tr class="${f===focus?"focus":""}"><td><a class="firm-link" href="#firm-${f.id}">${esc(f.name)}</a></td>${cols.map((c,i)=>{ const v=c.v(f); const lead=v!=null&&bests[i]!=null&&v===bests[i]; return `<td class="n num${lead?" lead":""}">${v==null?'<span class="note">n/d</span>':c.fmt(v)}${lead?' <span class="sr-only">(sector leader)</span>':""}</td>`; }).join("")}</tr>`).join("")}</tbody></table>`;
+  $("#pe-table").innerHTML=`<table><caption class="sr-only">${sector} peers compared</caption><thead><tr><th scope="col">Firm</th>${cols.map(c=>`<th scope="col" class="n">${c.h}</th>`).join("")}</tr></thead><tbody>${fs.map(f=>`<tr class="${f===focus?"focus":""}"><td><a class="firm-link" href="#firm-${f.id}">${esc(f.name)}</a></td>${cols.map((c,i)=>{ const v=c.v(f); const lead=v!=null&&bests[i]!=null&&v===bests[i]; return `<td class="n num${lead?" lead":""}">${v==null?'<span class="note">n/d</span>':c.fmt(v)+(f.bmProxy&&c.h==="Emissions per tonne"?'<sup title="Stainless steel from electric furnaces: not comparable with carbon steel">*</sup>':"")}${lead?' <span class="sr-only">(sector leader)</span>':""}</td>`; }).join("")}</tr>`).join("")}</tbody></table>`;
   // gaps for focus
   const gaps=cols.map((c,i)=>{ const v=c.v(focus), b=bests[i]; if(v==null||b==null||!c.best) return null; const gap=c.best==="min"?v-b:b-v; return {c,v,b,gap,lead:fs.find(f=>c.v(f)===b)}; }).filter(Boolean);
   const nd=cols.filter(c=>c.v(focus)==null).map(c=>c.h.toLowerCase());
